@@ -115,6 +115,9 @@ Since this is a zero-dependency single-page application, no Node.js or build too
 
 ## 💳 Pro Software Subscriptions & Contact
 To activate **ZenithPulse Pro™** software tools or inquire about institutional licensing:
+* **Monthly Access**: ₹199 / month
+* **Annual Pro (Best Value)**: ₹1,499 / year *(equivalent to ₹125/month)*
+* **Lifetime License**: ₹3,499 one-time
 * **WhatsApp / Phone Support**: [+91 9769179580](https://wa.me/919769179580)
 * **Direct UPI ID**: `9769179580@upi`
 * **Email**: `compliance@zenithpulse.example`
