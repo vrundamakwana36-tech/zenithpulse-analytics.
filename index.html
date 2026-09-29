@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenithPulse Analytics&trade; | Institutional Technical Analysis Platform</title>
+  <meta name="description" content="ZenithPulse Analytics&trade; provides algorithmic candlestick pattern recognition, technical indicators, illustrative support/resistance levels, multi-timeframe analysis, and strategy backtesting for educational purposes.">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- TradingView Lightweight Charts Library v4.1.1 (Multi-CDN with Fallbacks) -->
+  <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
+  <script>
+    if (typeof LightweightCharts === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"><\/script>');
+    }
+  </script>
+  <script>
+    if (typeof LightweightCharts === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.1/lightweight-charts.standalone.production.js"><\/script>');
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-primary: #0e1117;
+      --bg-secondary: #131722;
+      --bg-card: #1e222d;
+      --bg-hover: #262b3d;
+      --bg-active: #2a2e39;
+      --border-color: #2a2e39;
+      --border-subtle: #212635;
+      --text-primary: #f0f3fa;
+      --text-secondary: #868996;
+      --text-muted: #5d606b;
+      --bullish: #089981;
+      --bullish-glow: rgba(8, 153, 129, 0.18);
+      --bearish: #f23645;
+      --bearish-glow: rgba(242, 54, 69, 0.18);
+      --accent-blue: #2962ff;
+      --accent-blue-hover: #1e53e5;
+      --accent-gold: #ffb703;
+      --accent-purple: #9d4edd;
+      --sidebar-width: 60px;
+      --topbar-height: 52px;
+      --footer-height: 42px;
+      --right-panel-width: 320px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --shadow-elevation: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f4f6fa;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --bg-hover: #eef2f7;
+      --bg-active: #e2e7f0;
+      --border-color: #d6dce7;
+      --border-subtle: #e5e9f2;
+      --text-primary: #131722;
+      --text-secondary: #5d606b;
+      --text-muted: #868996;
+      --bullish: #089981;
+      --bearish: #f23645;
+      --accent-blue: #1e53e5;
+      --shadow-elevation: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 13px; line-height: 1.4; user-select: none;
+    }
+
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+    #app {
+      display: grid;
+      grid-template-rows: var(--topbar-height) 1fr auto;
+      grid-template-columns: var(--sidebar-width) 1fr var(--right-panel-width);
+      width: 100vw; height: 100vh; overflow: hidden;
+    }
+    #app.right-dock-collapsed { grid-template-columns: var(--sidebar-width) 1fr 0px; }
+
+    /* Top Bar */
+    header#top-bar {
+      grid-column: 1 / -1; grid-row: 1;
+      background: var(--bg-secondary); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 14px; gap: 10px; z-index: 50;
+    }
+    .brand-section { display: flex; align-items: center; gap: 8px; min-width: 210px; }
+    .brand-logo {
+      width: 28px; height: 28px; background: linear-gradient(135deg, #2962ff, #00d4ff);
+      border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 800; font-size: 15px;
+    }
+    .brand-title { font-weight: 700; font-size: 14.5px; color: var(--text-primary); letter-spacing: -0.2px; }
+    .brand-title .tm { font-size: 9px; color: var(--accent-blue); font-weight: 800; vertical-align: super; }
+    
+    .compliance-pill {
+      font-size: 10px; padding: 2px 7px; border-radius: 12px; font-weight: 700;
+      text-transform: uppercase; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+      border: 1px solid transparent;
+    }
+    .compliance-pill.educational { background: rgba(41, 98, 255, 0.12); color: #5d93ff; border-color: rgba(41, 98, 255, 0.3); }
+    .compliance-pill.sebi { background: rgba(8, 153, 129, 0.14); color: var(--bullish); border-color: rgba(8, 153, 129, 0.4); }
+
+    .market-controls { display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    .market-controls::-webkit-scrollbar { display: none; }
+    
+    .symbol-picker-btn {
+      display: flex; align-items: center; gap: 6px; background: var(--bg-card);
+      border: 1px solid var(--border-color); color: var(--text-primary); padding: 5px 10px;
+      border-radius: var(--radius-sm); cursor: pointer; font-weight: 700; font-size: 12.5px;
+    }
+    .symbol-picker-btn:hover { border-color: var(--accent-blue); background: var(--bg-hover); }
+    .sym-exchange { font-size: 9.5px; color: var(--text-muted); background: var(--bg-primary); padding: 1px 4px; border-radius: 2px; }
+
+    .price-badge-group { display: flex; align-items: baseline; gap: 6px; font-family: var(--font-mono); }
+    .live-price { font-size: 14.5px; font-weight: 700; }
+    .live-change { font-size: 11.5px; font-weight: 600; padding: 1px 5px; border-radius: 3px; }
+    .color-bullish { color: var(--bullish); }
+    .color-bearish { color: var(--bearish); }
+    .bg-bullish-subtle { background: var(--bullish-glow); }
+    .bg-bearish-subtle { background: var(--bearish-glow); }
+
+    .timeframe-group { display: flex; align-items: center; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 2px; }
+    .tf-btn {
+      background: transparent; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 600;
+      padding: 3px 7px; border-radius: 3px; cursor: pointer;
+    }
+    .tf-btn:hover { color: var(--text-primary); }
+    .tf-btn.active { color: #fff; background: var(--accent-blue); }
+
+    .indicator-toggle-group { display: flex; align-items: center; gap: 4px; }
+    .ind-pill {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary);
+      font-size: 11px; font-weight: 500; padding: 3px 7px; border-radius: var(--radius-sm); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .ind-pill:hover { color: var(--text-primary); border-color: var(--text-muted); }
+    .ind-pill.active { background: rgba(41, 98, 255, 0.14); border-color: var(--accent-blue); color: #6695ff; }
+    .ind-pill .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-muted); }
+    .ind-pill.active .dot { background: var(--accent-blue); }
+
+    .header-actions { display: flex; align-items: center; gap: 6px; }
+    .btn-action {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary);
+      width: 30px; height: 30px; border-radius: var(--radius-sm); display: flex; align-items: center;
+      justify-content: center; cursor: pointer;
+    }
+    .btn-action:hover { color: var(--text-primary); border-color: var(--accent-blue); background: var(--bg-hover); }
+
+    .pro-badge-btn {
+      display: flex; align-items: center; gap: 4px;
+      background: linear-gradient(135deg, #f5af19, #e65c00); color: #fff; font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: var(--radius-sm); border: none; cursor: pointer;
+    }
+    .pro-badge-btn.pro-active { background: linear-gradient(135deg, #10b981, #059669); }
+
+    /* Left Sidebar */
+    nav#sidebar {
+      grid-column: 1; grid-row: 2; background: var(--bg-secondary); border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column; align-items: center; padding: 10px 0; gap: 4px; z-index: 40;
+    }
+    .nav-item {
+      width: 44px; height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 2px; color: var(--text-secondary); border-radius: var(--radius-sm); cursor: pointer;
+      background: transparent; border: none; position: relative;
+    }
+    .nav-item:hover { color: var(--text-primary); background: var(--bg-hover); }
+    .nav-item.active { color: #fff; background: var(--accent-blue); }
+    .nav-item svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-item .nav-label { font-size: 8px; font-weight: 600; }
+    .nav-item .pro-tag-mini { position: absolute; top: 2px; right: 2px; background: var(--accent-gold); color: #000; font-size: 7px; font-weight: 800; padding: 0 2px; border-radius: 2px; }
+    .sidebar-spacer { flex: 1; }
+
+    /* Main Viewport */
+    main#viewport { grid-column: 2; grid-row: 2; position: relative; background: var(--bg-primary); overflow: hidden; display: flex; flex-direction: column; }
+    .view-container { display: none; width: 100%; height: 100%; overflow: hidden; }
+    .view-container.active { display: flex; flex-direction: column; }
+
+    /* Chart View */
+    #chart-view { height: 100%; display: flex; flex-direction: column; position: relative; }
+    .leveraged-risk-banner {
+      background: rgba(242, 54, 69, 0.12); border-bottom: 1px solid rgba(242, 54, 69, 0.25);
+      color: #ff858d; font-size: 11px; padding: 4px 14px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .chart-stage { flex: 1; width: 100%; position: relative; overflow: hidden; }
+    #tv-chart-container { width: 100%; height: 100%; }
+
+    .chart-watermark {
+      position: absolute; bottom: 18px; left: 18px; pointer-events: none; z-index: 5; opacity: 0.15;
+    }
+    .chart-watermark .wm-title { font-size: 32px; font-weight: 900; letter-spacing: -1px; }
+    .chart-watermark .wm-sub { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+    .sub-indicators-rack { display: flex; flex-direction: column; border-top: 1px solid var(--border-color); background: var(--bg-secondary); }
+    .sub-indicator-pane { height: 105px; width: 100%; border-bottom: 1px solid var(--border-subtle); position: relative; }
+    .pane-title-badge {
+      position: absolute; top: 4px; left: 8px; z-index: 10; background: rgba(19, 23, 34, 0.8);
+      padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border-color); font-size: 9.5px;
+      font-weight: 600; font-family: var(--font-mono); color: var(--text-secondary); display: flex; gap: 4px;
+    }
+    .pane-title-badge .val { color: var(--text-primary); }
+
+    /* Right Dock */
+    aside#right-dock {
+      grid-column: 3; grid-row: 2; background: var(--bg-secondary); border-left: 1px solid var(--border-color);
+      display: flex; flex-direction: column; overflow-y: auto; z-index: 30;
+    }
+    .dock-tabs { display: flex; border-bottom: 1px solid var(--border-color); background: var(--bg-card); position: sticky; top: 0; z-index: 10; }
+    .dock-tab-btn {
+      flex: 1; padding: 8px 2px; background: transparent; border: none; color: var(--text-secondary);
+      font-size: 11px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; text-align: center;
+    }
+    .dock-tab-btn:hover { color: var(--text-primary); }
+    .dock-tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: var(--bg-hover); }
+
+    .dock-pane { display: none; padding: 12px; flex-direction: column; gap: 12px; }
+    .dock-pane.active { display: flex; }
+
+    .card-panel { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; }
+    .card-title { font-size: 11.5px; font-weight: 700; text-transform: uppercase; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    
+    .status-verdict { font-size: 12.5px; font-weight: 800; padding: 2px 8px; border-radius: 4px; display: inline-block; }
+    .gauge-segments { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; height: 7px; border-radius: 3px; overflow: hidden; margin: 8px 0 4px; }
+    .gauge-seg { background: var(--border-subtle); opacity: 0.25; }
+    .gauge-seg.seg-strong-sell { background: #f23645; }
+    .gauge-seg.seg-sell { background: #ff7875; }
+    .gauge-seg.seg-neutral { background: #868996; }
+    .gauge-seg.seg-buy { background: #49aa19; }
+    .gauge-seg.seg-strong-buy { background: #089981; }
+    .gauge-seg.active { opacity: 1; box-shadow: 0 0 8px currentColor; }
+    .gauge-labels { display: flex; justify-content: space-between; font-size: 8.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+
+    .checklist-row {
+      display: flex; justify-content: space-between; font-size: 10.5px; padding: 4px 6px;
+      border-radius: var(--radius-sm); background: var(--bg-primary); border: 1px solid var(--border-subtle); margin-top: 4px;
+    }
+    .checklist-row .c-name { color: var(--text-secondary); }
+    .checklist-row .c-val { font-family: var(--font-mono); font-weight: 600; }
+
+    .il-warning-notice {
+      font-size: 10px; color: var(--accent-gold); background: rgba(255, 183, 3, 0.08);
+      border: 1px dashed rgba(255, 183, 3, 0.3); padding: 6px 8px; border-radius: var(--radius-sm); margin-bottom: 10px; line-height: 1.35;
+    }
+    .levels-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .levels-table tr { border-bottom: 1px solid var(--border-subtle); }
+    .levels-table td { padding: 5px 2px; }
+    .levels-table .lvl-p { text-align: right; font-family: var(--font-mono); font-weight: 700; }
+
+    .pattern-item { padding: 6px 8px; background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); margin-top: 4px; }
+    .pattern-item .p-top { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
+    .pattern-item .p-desc { font-size: 9.5px; color: var(--text-muted); margin-top: 2px; }
+
+    .wl-row {
+      display: flex; align-items: center; justify-content: space-between; padding: 6px 8px;
+      background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); cursor: pointer; margin-top: 4px;
+    }
+    .wl-row:hover { border-color: var(--accent-blue); background: var(--bg-hover); }
+    .wl-sparkline { width: 64px; height: 22px; }
+
+    /* Other Views (MTF, Screener, Backtest, Calc, Journal, Legal, Settings) */
+    .view-scroll { height: 100%; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .mtf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; padding: 6px; height: 100%; }
+    .mtf-box { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+    .mtf-header { padding: 6px 10px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
+    .mtf-chart { flex: 1; width: 100%; height: 100%; }
+
+    .screener-table { width: 100%; border-collapse: collapse; font-size: 11.5px; text-align: left; }
+    .screener-table th { background: var(--bg-card); padding: 8px 10px; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border-color); }
+    .screener-table td { padding: 8px 10px; border-bottom: 1px solid var(--border-subtle); }
+    .screener-table tr:hover td { background: var(--bg-hover); cursor: pointer; }
+
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 10.5px; color: var(--text-secondary); font-weight: 600; }
+    .form-input {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary);
+      padding: 6px 8px; border-radius: var(--radius-sm); font-size: 12px; font-family: var(--font-mono); outline: none;
+    }
+    .form-input:focus { border-color: var(--accent-blue); }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+    .metric-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 10px 12px; }
+    .metric-card .m-title { font-size: 10px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; }
+    .metric-card .m-val { font-size: 17px; font-weight: 800; font-family: var(--font-mono); margin-top: 2px; }
+
+    /* Sticky Statutory Footer */
+    footer#statutory-footer {
+      grid-column: 1 / -1; grid-row: 3; background: var(--bg-secondary); border-top: 1px solid var(--border-color);
+      padding: 5px 14px; display: flex; align-items: center; justify-content: space-between; gap: 14px;
+      font-size: 10px; color: var(--text-secondary); z-index: 50; line-height: 1.35;
+    }
+    #footer-disclaimer-text { flex: 1; }
+    .footer-links { display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; cursor: pointer; }
+    .footer-links a:hover { color: var(--accent-blue); text-decoration: underline; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px); z-index: 100;
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+      width: 100%; max-width: 580px; max-height: 88vh; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; position: relative;
+    }
+    .modal-close-btn { position: absolute; top: 14px; right: 14px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 6px; }
+    .pricing-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; display: flex; flex-direction: column; gap: 8px; position: relative; }
+    .pricing-card.featured { border-color: var(--accent-gold); box-shadow: 0 0 15px rgba(255, 183, 3, 0.15); }
+    .price-num { font-size: 20px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+
+    #toast-notification {
+      position: fixed; bottom: 50px; right: 20px; background: var(--bg-card); border: 1px solid var(--border-color);
+      border-left: 4px solid var(--accent-blue); padding: 10px 14px; border-radius: var(--radius-sm);
+      color: var(--text-primary); font-size: 12px; box-shadow: var(--shadow-elevation); z-index: 200; display: none;
+    }
+
+    @media (max-width: 1024px) {
+      #app { grid-template-columns: var(--sidebar-width) 1fr 0px; }
+      .mtf-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .timeframe-group, .indicator-toggle-group { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <div id="app">
+    <!-- TOP HEADER -->
+    <header id="top-bar">
+      <div class="brand-section">
+        <div class="brand-logo">Z</div>
+        <div class="brand-title">ZenithPulse<span class="tm">&trade;</span></div>
+        <div id="header-compliance-pill" class="compliance-pill educational" title="Platform Regulatory Classification">
+          <span id="header-compliance-label">EDUCATIONAL MODE</span>
+        </div>
+      </div>
+
+      <div class="market-controls">
+        <button id="btn-open-search" class="symbol-picker-btn" title="Search Market Symbols">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span id="current-symbol-display">RELIANCE</span>
+          <span id="current-exchange-display" class="sym-exchange">NSE</span>
+        </button>
+
+        <div class="price-badge-group">
+          <span id="current-price-val" class="live-price">₹2,940.40</span>
+          <span id="current-change-val" class="live-change color-bullish bg-bullish-subtle">+1.24% (+₹36.00)</span>
+        </div>
+
+        <div class="timeframe-group" id="tf-group">
+          <button class="tf-btn" data-tf="1m">1m</button>
+          <button class="tf-btn" data-tf="5m">5m</button>
+          <button class="tf-btn" data-tf="15m">15m</button>
+          <button class="tf-btn" data-tf="1h">1h</button>
+          <button class="tf-btn" data-tf="4h">4h</button>
+          <button class="tf-btn active" data-tf="1D">1D</button>
+          <button class="tf-btn" data-tf="1W">1W</button>
+        </div>
+
+        <div class="indicator-toggle-group">
+          <button class="ind-pill active" data-ind="ema"><span class="dot"></span>EMA (9/21/50/200)</button>
+          <button class="ind-pill active" data-ind="bb"><span class="dot"></span>BB (20,2)</button>
+          <button class="ind-pill active" data-ind="supertrend"><span class="dot"></span>Supertrend</button>
+          <button class="ind-pill active" data-ind="vwap"><span class="dot"></span>VWAP</button>
+          <button class="ind-pill active" data-ind="sr"><span class="dot"></span>Auto S/R</button>
+          <button class="ind-pill active" data-ind="rsi"><span class="dot"></span>RSI (14)</button>
+          <button class="ind-pill active" data-ind="macd"><span class="dot"></span>MACD</button>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button id="btn-pro-upgrade" class="pro-badge-btn" title="Pro Software Tools">
+          <span>⚡</span><span id="pro-btn-text">PRO ACCESS</span>
+        </button>
+        <button id="btn-chart-screenshot" class="btn-action" title="Export PNG Chart Image">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        </button>
+        <button id="btn-theme-toggle" class="btn-action" title="Toggle Theme">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+        </button>
+        <button id="btn-toggle-right-dock" class="btn-action" title="Toggle Dock">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- LEFT SIDEBAR -->
+    <nav id="sidebar">
+      <button class="nav-item active" data-view="chart-view" title="Candlestick Chart & Signal Setups">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span class="nav-label">Charts</span>
+      </button>
+      <button class="nav-item" data-view="mtf-view" title="Multi-Timeframe Analysis (Pro)">
+        <span class="pro-tag-mini">PRO</span>
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span class="nav-label">Multi-TF</span>
+      </button>
+      <button class="nav-item" data-view="screener-view" title="Market Screener">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span class="nav-label">Screener</span>
+      </button>
+      <button class="nav-item" data-view="backtest-view" title="Strategy Backtester (Pro)">
+        <span class="pro-tag-mini">PRO</span>
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <span class="nav-label">Backtest</span>
+      </button>
+      <button class="nav-item" data-view="calculator-view" title="Position Size Calculator">
+        <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line></svg>
+        <span class="nav-label">Calc</span>
+      </button>
+      <button class="nav-item" data-view="journal-view" title="Trade Study Journal">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <span class="nav-label">Journal</span>
+      </button>
+      <div class="sidebar-spacer"></div>
+      <button class="nav-item" data-view="legal-view" title="SEBI Disclaimers & DPDP Legal Center">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span class="nav-label">Legal</span>
+      </button>
+      <button class="nav-item" data-view="settings-view" title="Settings & Compliance Mode Switch">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span class="nav-label">Settings</span>
+      </button>
+    </nav>
+
+    <!-- MAIN VIEWPORT -->
+    <main id="viewport">
+      <!-- VIEW 1: CANDLESTICK CHART -->
+      <section id="chart-view" class="view-container active">
+        <div id="leveraged-risk-banner" class="leveraged-risk-banner" style="display: none;">
+          <div>
+            <strong>⚠️ High-Risk Market Notice:</strong> Derivatives and leveraged products carry substantial financial risk; SEBI research indicates that over 90% of individual traders in equity F&O incur net financial losses. Offshore forex and crypto are not governed by SEBI regulations.
+          </div>
+          <button onclick="document.getElementById('leveraged-risk-banner').style.display='none'" style="background:none; border:none; color:inherit; cursor:pointer;">✕</button>
+        </div>
+
+        <div class="chart-stage">
+          <div id="tv-chart-container"></div>
+          <div class="chart-watermark">
+            <span class="wm-title" id="wm-symbol-text">RELIANCE</span>
+            <span class="wm-sub">ZenithPulse Analytics&trade; • Educational Analysis</span>
+          </div>
+        </div>
+
+        <div id="sub-indicators-rack" class="sub-indicators-rack">
+          <div id="rsi-sub-pane" class="sub-indicator-pane">
+            <div class="pane-title-badge">
+              <span>RSI (14)</span>
+              <span id="rsi-current-reading" class="val">48.2</span>
+              <span style="color: var(--text-muted);">[30-70 Bounds]</span>
+            </div>
+            <div id="rsi-canvas-container" style="width: 100%; height: 100%;"></div>
+          </div>
+          <div id="macd-sub-pane" class="sub-indicator-pane">
+            <div class="pane-title-badge">
+              <span>MACD (12, 26, 9)</span>
+              <span id="macd-current-reading" class="val">+4.12</span>
+              <span id="macd-signal-reading" style="color: var(--text-muted);">Sig: +2.80</span>
+            </div>
+            <div id="macd-canvas-container" style="width: 100%; height: 100%;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: MULTI-TIMEFRAME ANALYSIS (PRO) -->
+      <section id="mtf-view" class="view-container">
+        <div style="padding: 8px 14px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 13px; font-weight: 700;">Multi-Timeframe Confluence Matrix (Pro)</h3>
+          <span style="font-size: 11px; color: var(--text-secondary);">Tri-Timeframe Alignment: <strong class="color-bullish">Bullish Macro / Micro Consolidation</strong></span>
+        </div>
+        <div class="mtf-grid">
+          <div class="mtf-box">
+            <div class="mtf-header"><span>1D (Daily Macro Trend)</span><span class="color-bullish">Bullish Bias</span></div>
+            <div class="mtf-chart" id="mtf-chart-1d"></div>
+          </div>
+          <div class="mtf-box">
+            <div class="mtf-header"><span>1H (Intermediate Swing)</span><span class="color-bullish">Pullback Support</span></div>
+            <div class="mtf-chart" id="mtf-chart-1h"></div>
+          </div>
+          <div class="mtf-box">
+            <div class="mtf-header"><span>15m (Micro Execution)</span><span class="color-bearish">Neutral Range</span></div>
+            <div class="mtf-chart" id="mtf-chart-15m"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: MARKET SCREENER -->
+      <section id="screener-view" class="view-container view-scroll">
+        <div class="card-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <div>
+              <h2 style="font-size: 16px; font-weight: 700;">Automated Technical Market Screener</h2>
+              <p style="font-size: 11px; color: var(--text-secondary);">Filter symbols by mathematical indicator conditions, moving average alignment, and candlestick setups.</p>
+            </div>
+            <button id="btn-export-screener-csv" class="ind-pill">Export CSV</button>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <select id="sc-asset" class="form-input"><option value="ALL">All Assets</option><option value="NSE">NSE Stocks</option><option value="INDICES">Indices</option><option value="CRYPTO">Crypto</option><option value="FOREX">Forex</option></select>
+            <select id="sc-rsi" class="form-input"><option value="ALL">Any RSI</option><option value="OVERSOLD">RSI &lt; 35 (Oversold)</option><option value="OVERBOUGHT">RSI &gt; 65 (Overbought)</option></select>
+            <select id="sc-trend" class="form-input"><option value="ALL">Any Trend</option><option value="ST_GREEN">Supertrend Green</option><option value="ST_RED">Supertrend Red</option><option value="ABOVE_EMA200">Price &gt; 200 EMA</option></select>
+          </div>
+        </div>
+        <div class="card-panel" style="padding: 0; overflow-x: auto;">
+          <table class="screener-table">
+            <thead>
+              <tr>
+                <th>Symbol</th><th>Class</th><th>Price</th><th>24h Chg</th><th>RSI (14)</th><th>MACD</th><th>200 EMA</th><th>Supertrend</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="screener-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 4: STRATEGY BACKTESTER (PRO) -->
+      <section id="backtest-view" class="view-container view-scroll">
+        <div class="card-panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto; gap: 10px; align-items: flex-end;">
+          <div class="form-group">
+            <label>Symbol</label>
+            <select id="bt-sym" class="form-input"><option value="RELIANCE">RELIANCE (NSE)</option><option value="TCS">TCS (NSE)</option><option value="INFY">INFY (NSE)</option><option value="HDFCBANK">HDFCBANK (NSE)</option><option value="BTC/USDT">BTC/USDT (Crypto)</option></select>
+          </div>
+          <div class="form-group">
+            <label>Quantitative Strategy</label>
+            <select id="bt-strat" class="form-input">
+              <option value="EMA_CROSS">EMA 9/21 Crossover + 200 EMA Trend Filter</option>
+              <option value="SUPERTREND">Supertrend (10, 3) Trend Following</option>
+              <option value="RSI_BB">RSI Oversold + Lower BB Reversion</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Initial Capital (₹)</label>
+            <input type="number" id="bt-cap" class="form-input" value="100000">
+          </div>
+          <div class="form-group">
+            <label>Window</label>
+            <select id="bt-period" class="form-input"><option value="90">Past 90 Days</option><option value="180">Past 180 Days</option><option value="365" selected>Past 1 Year (365D)</option></select>
+          </div>
+          <button id="btn-run-bt" class="pro-badge-btn" style="height: 32px; padding: 0 14px; font-size: 12px;">Run Simulation</button>
+        </div>
+
+        <div class="il-warning-notice">
+          <strong>Mandatory Risk &amp; Methodology Notice:</strong> Backtested and past performance is hypothetical, does not reflect real trading, and is not indicative of future results. Assumptions: Zero slippage, zero brokerage commissions, executions strictly at candle close. ZenithPulse does not cherry-pick statistical results.
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card"><span class="m-title">Win Rate</span><div id="bt-wr" class="m-val color-bullish">58.4%</div></div>
+          <div class="metric-card"><span class="m-title">Net Hypothetical P/L</span><div id="bt-pnl" class="m-val color-bullish">+₹28,450 (+28.5%)</div></div>
+          <div class="metric-card"><span class="m-title">Max Drawdown</span><div id="bt-dd" class="m-val color-bearish">-7.8%</div></div>
+          <div class="metric-card"><span class="m-title">Profit Factor</span><div id="bt-pf" class="m-val">1.74</div></div>
+          <div class="metric-card"><span class="m-title">Total Trades</span><div id="bt-trades" class="m-val">48 (28W / 20L)</div></div>
+        </div>
+
+        <div class="card-panel">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h3 style="font-size: 12.5px; font-weight: 700;">Simulated Equity Curve (Capital Growth)</h3>
+            <button id="btn-export-bt-csv" class="ind-pill" style="font-size: 10px;">Export Trade Log (CSV)</button>
+          </div>
+          <div style="width: 100%; height: 210px;"><canvas id="equity-curve-canvas"></canvas></div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: POSITION CALCULATOR -->
+      <section id="calculator-view" class="view-container view-scroll" style="align-items: center;">
+        <div class="card-panel" style="width: 100%; max-width: 620px; display: flex; flex-direction: column; gap: 14px;">
+          <div>
+            <h2 style="font-size: 16px; font-weight: 700;">Mathematical Position Size &amp; Risk Calculator</h2>
+            <p style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
+              Pure mathematical tool based on your self-selected risk inputs. Does not provide trading advice or recommendations.
+            </p>
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+            <div class="form-group"><label>Account Capital (₹)</label><input type="number" id="calc-cap" class="form-input" value="500000"></div>
+            <div class="form-group"><label>Risk Per Trade (%)</label><input type="number" id="calc-risk" class="form-input" value="1.0" step="0.25"></div>
+            <div class="form-group"><label>Reference Entry Price (₹)</label><input type="number" id="calc-entry" class="form-input" value="2940.00"></div>
+            <div class="form-group"><label>Reference Stop Level (₹)</label><input type="number" id="calc-stop" class="form-input" value="2895.00"></div>
+          </div>
+          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+            <div><span style="font-size: 10px; color: var(--text-secondary);">Max Permissible Loss</span><div id="res-risk-amt" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono); color: var(--bearish);">₹5,000.00</div></div>
+            <div><span style="font-size: 10px; color: var(--text-secondary);">Risk Per Share</span><div id="res-risk-share" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono);">₹45.00</div></div>
+            <div><span style="font-size: 10px; color: var(--text-secondary);">Calculated Sizing</span><div id="res-qty" style="font-size: 19px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">111 Shares</div></div>
+            <div><span style="font-size: 10px; color: var(--text-secondary);">Total Position Exposure</span><div id="res-exposure" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono);">₹3,26,340.00</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: TRADE JOURNAL -->
+      <section id="journal-view" class="view-container view-scroll">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2 style="font-size: 16px; font-weight: 700;">Trade Observation &amp; Study Journal</h2>
+            <p style="font-size: 11px; color: var(--text-secondary);">Personal study log stored strictly in your browser's private local storage.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button id="btn-export-jn-csv" class="ind-pill">Export CSV</button>
+            <button id="btn-open-jn-modal" class="pro-badge-btn" style="background: var(--bullish);">+ New Study Note</button>
+          </div>
+        </div>
+        <div class="card-panel" style="padding: 0; overflow-x: auto;">
+          <table class="screener-table">
+            <thead><tr><th>Date</th><th>Symbol</th><th>TF</th><th>Observed Setup</th><th>Reason</th><th>Outcome</th><th>Action</th></tr></thead>
+            <tbody id="journal-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- VIEW 7: LEGAL & COMPLIANCE CENTER -->
+      <section id="legal-view" class="view-container view-scroll" style="max-width: 860px; margin: 0 auto; width: 100%;">
+        <div class="card-panel">
+          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">1. Regulatory Compliance &amp; Risk Disclaimers</h2>
+          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+            <strong>Statutory Securities Risk Disclosure:</strong> Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides automated algorithmic and technical analysis tools strictly for educational, informational, and mathematical study purposes.
+          </p>
+          <p id="legal-statutory-notice" style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+            <strong>Educational Mode Status:</strong> ZenithPulse Analytics&trade; is not registered as an Investment Adviser or Research Analyst with SEBI. Nothing on this platform constitutes an investment recommendation, buy/sell call, price target, or financial advisory service.
+          </p>
+          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+            <strong>Leveraged Products (F&amp;O, Forex, Crypto):</strong> Derivatives carry substantial capital risk. SEBI's published study reveals that 9 out of 10 individual traders in equity F&amp;O incurred net financial losses. Offshore forex and crypto trading are not regulated under SEBI.
+          </p>
+        </div>
+
+        <div class="card-panel">
+          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">2. Privacy Policy &amp; DPDP Act 2023 Compliance</h2>
+          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+            In alignment with India's <strong>Digital Personal Data Protection Act (DPDP Act) 2023</strong>: We do not collect or store your real broker portfolio holdings, bank credentials, or PAN. All custom watchlists and journal logs are stored solely in your local browser cache. Under Section 12, you have the right to erase all cached data anytime.
+          </p>
+          <button id="btn-dpdp-wipe" class="ind-pill" style="color: var(--bearish); border-color: rgba(242,54,69,0.4); padding: 6px 12px;">🗑️ Erase All Local Data (DPDP Act)</button>
+        </div>
+
+        <div class="card-panel">
+          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">3. Grievance Redressal &amp; Official Contact</h2>
+          <div style="font-size: 12px; line-height: 1.6; background: var(--bg-primary); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+            <div><strong>Grievance &amp; Compliance Officer:</strong> Vrunda Mehta</div>
+            <div><strong>Designation:</strong> Head of Compliance</div>
+            <div><strong>Entity:</strong> Zenith Capital Research &amp; Analytics LLP</div>
+            <div><strong>Email:</strong> compliance@zenithpulse.example | <strong>Phone:</strong> +91 (022) 6912-8800</div>
+            <div><strong>Address:</strong> Level 14, Tower B, BKC Financial Center, Bandra Kurla Complex, Mumbai, Maharashtra 400051</div>
+            <div><strong>Regulatory Portals:</strong> <a href="https://scores.sebi.gov.in" target="_blank" style="color: var(--accent-blue);">scores.sebi.gov.in</a> (SEBI SCORES) | <a href="https://smartodr.in" target="_blank" style="color: var(--accent-blue);">smartodr.in</a> (SMART ODR)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 8: SETTINGS -->
+      <section id="settings-view" class="view-container view-scroll" style="max-width: 740px; margin: 0 auto; width: 100%;">
+        <div class="card-panel" style="display: flex; flex-direction: column; gap: 12px;">
+          <h3 style="font-size: 14px; font-weight: 700;">Regulatory Mode Selection</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600;">Active Compliance Mode</div>
+              <div style="font-size: 11px; color: var(--text-secondary);">Toggle between Educational Research and SEBI Registered Intermediary Mode.</div>
+            </div>
+            <select id="cfg-mode-select" class="form-input" style="font-weight: 600;">
+              <option value="EDUCATIONAL">EDUCATIONAL (Default - No Advice)</option>
+              <option value="SEBI_REGISTERED">SEBI_REGISTERED (Research Analyst)</option>
+            </select>
+          </div>
+
+          <div id="sebi-detail-box" style="display: none; flex-direction: column; gap: 8px; background: var(--bg-primary); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <div style="font-size: 11.5px; color: var(--bullish); font-weight: 700;">SEBI Registry Credentials</div>
+            <div style="font-size: 11.5px;">Type: Research Analyst | Reg No: INH000012345 | Validity: 2024 - 2029</div>
+          </div>
+        </div>
+
+        <div class="card-panel" style="display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="font-weight: 600;">DPDP Local Data Storage</div>
+            <div style="font-size: 11px; color: var(--text-secondary);">Wipe all locally saved trade journals, watchlists, and theme preferences.</div>
+          </div>
+          <button id="btn-purge-settings" class="ind-pill" style="color: var(--bearish);">Purge Storage</button>
+        </div>
+      </section>
+    </main>
+
+    <!-- RIGHT ANALYTICS DOCK -->
+    <aside id="right-dock">
+      <div class="dock-tabs">
+        <button class="dock-tab-btn active" data-dock="signals">Signals</button>
+        <button class="dock-tab-btn" data-dock="levels">Levels</button>
+        <button class="dock-tab-btn" data-dock="watchlist">Watchlist</button>
+      </div>
+
+      <!-- Signals Pane -->
+      <div id="dock-pane-signals" class="dock-pane active">
+        <div class="card-panel">
+          <div class="card-title">
+            <span>Signal Strength Meter</span>
+            <span id="strength-badge" class="status-verdict color-bullish bg-bullish-subtle">Bullish Setup</span>
+          </div>
+          <div class="gauge-segments">
+            <div id="seg-strong-sell" class="gauge-seg seg-strong-sell" title="Strongly Bearish"></div>
+            <div id="seg-sell" class="gauge-seg seg-sell" title="Bearish"></div>
+            <div id="seg-neutral" class="gauge-seg seg-neutral" title="Neutral"></div>
+            <div id="seg-buy" class="gauge-seg seg-buy active" title="Bullish"></div>
+            <div id="seg-strong-buy" class="gauge-seg seg-strong-buy" title="Strongly Bullish"></div>
+          </div>
+          <div class="gauge-labels"><span>Str. Bearish</span><span>Neutral</span><span>Str. Bullish</span></div>
+          <div style="font-size: 9.5px; color: var(--text-muted); margin-top: 6px; font-style: italic;">
+            * Mathematical aggregate of 8 technical factors. Does NOT imply certainty or predictive assurance.
+          </div>
+
+          <div style="margin-top: 10px;">
+            <div class="checklist-row"><span class="c-name">RSI (14)</span><span id="chk-rsi" class="c-val color-bullish">34.2 (Pullback Bounce)</span></div>
+            <div class="checklist-row"><span class="c-name">MACD</span><span id="chk-macd" class="c-val color-bullish">Bullish Histogram Cross</span></div>
+            <div class="checklist-row"><span class="c-name">EMA Hierarchy</span><span id="chk-ema" class="c-val color-bullish">Price &gt; 50 &amp; 200 EMA</span></div>
+            <div class="checklist-row"><span class="c-name">Supertrend (10, 3)</span><span id="chk-st" class="c-val color-bullish">Green (Support at ₹2,880)</span></div>
+            <div class="checklist-row"><span class="c-name">Session VWAP</span><span id="chk-vwap" class="c-val color-bullish">Trading Above VWAP</span></div>
+            <div class="checklist-row"><span class="c-name">Volume Confirmation</span><span id="chk-vol" class="c-val color-bullish">1.35x 20-Day SMA</span></div>
+          </div>
+        </div>
+
+        <div class="card-panel">
+          <div class="card-title"><span>Detected Candlestick Patterns</span><span style="font-size: 9px; color: var(--accent-blue);">Real-time</span></div>
+          <div id="patterns-container"></div>
+        </div>
+      </div>
+
+      <!-- Levels Pane -->
+      <div id="dock-pane-levels" class="dock-pane">
+        <div class="card-panel">
+          <div class="il-warning-notice">
+            <strong>Illustrative technical levels, not a recommendation:</strong>
+            These mathematical reference zones are auto-calculated from swing pivot clusters and ATR volatility bands. They do not constitute an entry, stop-loss, or price target order.
+          </div>
+          <table class="levels-table">
+            <tbody>
+              <tr><td>Resistance 2 (Major Swing)</td><td id="lvl-r2" class="lvl-p color-bearish">₹3,025.00</td></tr>
+              <tr><td>Resistance 1 (Recent High)</td><td id="lvl-r1" class="lvl-p color-bearish">₹2,980.50</td></tr>
+              <tr style="background: rgba(41,98,255,0.06);"><td><strong>Current Reference Price</strong></td><td id="lvl-curr" class="lvl-p" style="color: var(--accent-blue);">₹2,940.40</td></tr>
+              <tr><td>Central Pivot Zone</td><td id="lvl-pivot" class="lvl-p">₹2,915.20</td></tr>
+              <tr><td>Support 1 (EMA Confluence)</td><td id="lvl-s1" class="lvl-p color-bullish">₹2,890.00</td></tr>
+              <tr><td>Support 2 (Structural Demand)</td><td id="lvl-s2" class="lvl-p color-bullish">₹2,845.00</td></tr>
+              <tr><td>ATR (14-Period Volatility)</td><td id="lvl-atr" class="lvl-p">±₹34.80 (1.18%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Watchlist Pane -->
+      <div id="dock-pane-watchlist" class="dock-pane">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 12px; font-weight: 700;">Market Watchlist</h3>
+          <button id="btn-wl-add" class="ind-pill" style="font-size: 10px;">+ Add Symbol</button>
+        </div>
+        <div id="watchlist-container"></div>
+      </div>
+    </aside>
+
+    <!-- STICKY STATUTORY COMPLIANCE FOOTER -->
+    <footer id="statutory-footer">
+      <div id="footer-disclaimer-text">
+        Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides technical analysis tools for educational and informational purposes only. It is not investment advice or a research recommendation. We are not registered as an Investment Adviser or Research Analyst with SEBI.
+      </div>
+      <div class="footer-links">
+        <span>&copy; 2026 Zenith Capital Research &amp; Analytics LLP</span>
+        <span>•</span>
+        <a id="link-legal">Legal Disclosures</a>
+        <span>•</span>
+        <a id="link-dpdp">DPDP Privacy</a>
+        <span>•</span>
+        <a id="link-grievance">Grievance Redressal</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- MODAL: FIRST VISIT RISK ACKNOWLEDGEMENT -->
+  <div id="modal-compliance-welcome" class="modal-overlay">
+    <div class="modal-card">
+      <div style="display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+        <div class="brand-logo" style="width: 26px; height: 26px; font-size: 13px;">Z</div>
+        <div>
+          <h2 style="font-size: 15px; font-weight: 700;">Mandatory Risk Disclosure &amp; Terms</h2>
+          <span style="font-size: 10.5px; color: var(--text-secondary);">ZenithPulse Analytics&trade; • Educational Platform</span>
+        </div>
+      </div>
+      <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.5; display: flex; flex-direction: column; gap: 8px;">
+        <div><strong>1. Pure Technical Tooling:</strong> All indicators, markers, and levels are calculated mathematically for educational study only.</div>
+        <div><strong>2. No Advice or Assured Gains:</strong> No personalized advice, guaranteed returns, or buy/sell instructions are given.</div>
+        <div><strong>3. Risk of Financial Loss:</strong> Securities and derivatives trading involve risk. SEBI research demonstrates that 90% of individual traders in equity F&amp;O incur net losses.</div>
+        <div><strong>4. Consult a Certified Professional:</strong> Always consult a SEBI-registered Investment Adviser before committing capital.</div>
+      </div>
+      <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+        <button id="btn-accept-compliance" class="pro-badge-btn" style="background: var(--accent-blue); padding: 8px 16px;">I Understand &amp; Agree to Proceed</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRO UPGRADE (SEBI COMPLIANT FLAT PRICING) -->
+  <div id="modal-pro-upgrade" class="modal-overlay">
+    <div class="modal-card" style="max-width: 680px;">
+      <button class="modal-close-btn" onclick="document.getElementById('modal-pro-upgrade').classList.remove('active')">✕</button>
+      <div style="text-align: center;">
+        <span class="compliance-pill sebi">SOFTWARE UTILITY</span>
+        <h2 style="font-size: 19px; font-weight: 800; margin-top: 4px;">ZenithPulse Pro&trade; Subscription</h2>
+        <p style="font-size: 11.5px; color: var(--text-secondary);">Flat software license for tri-timeframe matrix, algorithmic backtesting, and full technical screener.</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <span style="font-weight: 700; font-size: 12px; color: var(--text-secondary);">Monthly</span>
+          <div class="price-num">₹999 <span style="font-size: 10px; color: var(--text-muted);">/ mo</span></div>
+          <p style="font-size: 10.5px; color: var(--text-secondary);">Flat recurring software fee.</p>
+          <button class="ind-pill" style="justify-content: center; margin-top: 8px;" onclick="activateDemoPro('Monthly')">Select Monthly</button>
+        </div>
+        <div class="pricing-card featured">
+          <span style="font-weight: 700; font-size: 12px; color: var(--accent-gold);">Annual Pro</span>
+          <div class="price-num">₹7,999 <span style="font-size: 10px; color: var(--text-muted);">/ yr</span></div>
+          <p style="font-size: 10.5px; color: var(--text-secondary);">Equivalent to ₹666/mo flat fee.</p>
+          <button class="pro-badge-btn" style="justify-content: center; margin-top: 8px;" onclick="activateDemoPro('Annual')">Activate Annual Pro</button>
+        </div>
+        <div class="pricing-card">
+          <span style="font-weight: 700; font-size: 12px; color: var(--text-secondary);">Lifetime</span>
+          <div class="price-num">₹19,999</div>
+          <p style="font-size: 10.5px; color: var(--text-secondary);">Perpetual software license.</p>
+          <button class="ind-pill" style="justify-content: center; margin-top: 8px;" onclick="activateDemoPro('Lifetime')">Get Lifetime</button>
+        </div>
+      </div>
+      <div style="font-size: 10px; color: var(--text-muted); background: var(--bg-card); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+        <strong>Compliance Notice:</strong> Subscription fees are strictly for software access. We do NOT operate profit-sharing structures, manage client funds, or guarantee trading outcomes.
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SYMBOL SEARCH -->
+  <div id="modal-symbol-search" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="document.getElementById('modal-symbol-search').classList.remove('active')">✕</button>
+      <input type="text" id="symbol-search-input" class="form-input" placeholder="Search Symbol (RELIANCE, TCS, NIFTY 50, BTC/USDT)..." style="font-size: 13px; padding: 8px 10px;">
+      <div style="display: flex; gap: 4px;" id="search-tabs">
+        <button class="ind-pill active" data-tab="ALL">All</button>
+        <button class="ind-pill" data-tab="NSE">NSE</button>
+        <button class="ind-pill" data-tab="INDICES">Indices</button>
+        <button class="ind-pill" data-tab="CRYPTO">Crypto</button>
+        <button class="ind-pill" data-tab="FOREX">Forex</button>
+      </div>
+      <div id="search-results-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 280px; overflow-y: auto;"></div>
+      <div style="font-size: 9.5px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 4px; display: flex; justify-content: space-between;">
+        <span>Data: Public Market Feeds &amp; Synthetic Ticks</span><span>Data may be delayed up to 15m</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: NEW JOURNAL NOTE -->
+  <div id="modal-add-journal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 460px;">
+      <button class="modal-close-btn" onclick="document.getElementById('modal-add-journal').classList.remove('active')">✕</button>
+      <h3 style="font-size: 14px; font-weight: 700;">Record Technical Observation</h3>
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
+        <div class="form-group"><label>Symbol</label><input type="text" id="jn-sym" class="form-input" value="RELIANCE"></div>
+        <div class="form-group"><label>Timeframe</label><input type="text" id="jn-tf" class="form-input" value="1D"></div>
+      </div>
+      <div class="form-group"><label>Setup Observed</label><input type="text" id="jn-setup" class="form-input" placeholder="e.g. Bullish Engulfing near 200 EMA"></div>
+      <div class="form-group"><label>Confluence Notes</label><textarea id="jn-reason" class="form-input" style="height: 50px; resize: none;" placeholder="e.g. RSI 28.5 oversold bounce..."></textarea></div>
+      <div class="form-group"><label>Outcome / Reflection</label><textarea id="jn-outcome" class="form-input" style="height: 50px; resize: none;" placeholder="e.g. Respected support level..."></textarea></div>
+      <button id="btn-save-jn" class="pro-badge-btn" style="background: var(--bullish); justify-content: center; padding: 8px;">Save Study Entry</button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast-notification"></div>
+
+  <!-- ==========================================================================
+       VANILLA JAVASCRIPT: LOGIC & ENGINE
+       ========================================================================== -->
+  <script>
+    /* 1. CONFIGURATION & SEBI REGULATION MODE */
+    let COMPLIANCE_MODE = "EDUCATIONAL"; // Options: "EDUCATIONAL" | "SEBI_REGISTERED"
+
+    const SEBI_CONFIG = {
+      regType: "Research Analyst",
+      regNo: "INH000012345",
+      validity: "15-Mar-2024 to 14-Mar-2029",
+      ownerName: "Zenith Capital Research & Analytics LLP",
+      email: "compliance@zenithpulse.example"
+    };
+
+    const USER_STATE = {
+      isPro: false,
+      theme: "dark",
+      activeSymbol: "RELIANCE",
+      activeExchange: "NSE",
+      activeAssetClass: "NSE",
+      activeTimeframe: "1D",
+      indicators: { ema: true, bb: true, supertrend: true, vwap: true, sr: true, rsi: true, macd: true },
+      watchlist: ["RELIANCE", "TCS", "INFY", "HDFCBANK", "NIFTY 50", "BTC/USDT"],
+      journal: []
+    };
+
+    /* 2. SYMBOL UNIVERSE */
+    const SYMBOL_UNIVERSE = [
+      { symbol: "RELIANCE", name: "Reliance Industries Ltd.", exchange: "NSE", category: "NSE", basePrice: 2940.40, tickDecimals: 2, isLeveraged: true },
+      { symbol: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", category: "NSE", basePrice: 4210.80, tickDecimals: 2, isLeveraged: true },
+      { symbol: "INFY", name: "Infosys Ltd.", exchange: "NSE", category: "NSE", basePrice: 1895.50, tickDecimals: 2, isLeveraged: true },
+      { symbol: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1642.30, tickDecimals: 2, isLeveraged: true },
+      { symbol: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", category: "NSE", basePrice: 968.75, tickDecimals: 2, isLeveraged: true },
+      { symbol: "SBIN", name: "State Bank of India", exchange: "NSE", category: "NSE", basePrice: 795.60, tickDecimals: 2, isLeveraged: true },
+      { symbol: "ITC", name: "ITC Ltd.", exchange: "NSE", category: "NSE", basePrice: 512.20, tickDecimals: 2, isLeveraged: false },
+      { symbol: "NIFTY 50", name: "NIFTY 50 Benchmark Index", exchange: "NSE", category: "INDICES", basePrice: 25810.00, tickDecimals: 2, isLeveraged: true },
+      { symbol: "BANK NIFTY", name: "NIFTY Bank Index", exchange: "NSE", category: "INDICES", basePrice: 53950.00, tickDecimals: 2, isLeveraged: true },
+      { symbol: "SENSEX", name: "BSE SENSEX 30", exchange: "BSE", category: "INDICES", basePrice: 84290.00, tickDecimals: 2, isLeveraged: false },
+      { symbol: "BTC/USDT", name: "Bitcoin / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 65420.00, tickDecimals: 2, isLeveraged: true },
+      { symbol: "ETH/USDT", name: "Ethereum / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 2640.50, tickDecimals: 2, isLeveraged: true },
+      { symbol: "USD/INR", name: "US Dollar / Indian Rupee", exchange: "FX", category: "FOREX", basePrice: 83.68, tickDecimals: 4, isLeveraged: true },
+      { symbol: "EUR/USD", name: "Euro / US Dollar", exchange: "FX", category: "FOREX", basePrice: 1.1165, tickDecimals: 4, isLeveraged: true }
+    ];
+
+    function generateCandleData(symObj, timeframe, count = 180) {
+      const candles = [];
+      const base = symObj.basePrice;
+      const vol = base * 0.012;
+      const now = Math.floor(Date.now() / 1000);
+      let step = 86400;
+      if (timeframe === "1m") step = 60;
+      else if (timeframe === "5m") step = 300;
+      else if (timeframe === "15m") step = 900;
+      else if (timeframe === "1h") step = 3600;
+      else if (timeframe === "4h") step = 14400;
+      else if (timeframe === "1W") step = 604800;
+
+      let t = now - (count * step);
+      let p = base * 0.88;
+
+      for (let i = 0; i < count; i++) {
+        const wave = Math.sin(i / 14) * 1.4 + Math.cos(i / 6) * 1.1;
+        const drift = (Math.random() - 0.485) * vol + (wave * vol * 0.15);
+        const open = p;
+        const close = Math.max(open * 0.5, open + drift);
+        const high = Math.max(open, close) + (Math.random() * vol * 0.6);
+        const low = Math.min(open, close) - (Math.random() * vol * 0.6);
+        const volume = Math.floor((Math.random() * 400000 + 150000) * (1 + Math.abs(drift) / vol));
+
+        candles.push({
+          time: t,
+          open: parseFloat(open.toFixed(symObj.tickDecimals)),
+          high: parseFloat(high.toFixed(symObj.tickDecimals)),
+          low: parseFloat(low.toFixed(symObj.tickDecimals)),
+          close: parseFloat(close.toFixed(symObj.tickDecimals)),
+          volume: volume
+        });
+        p = close;
+        t += step;
+      }
+      return candles;
+    }
+
+    /* 3. TECHNICAL ANALYSIS FUNCTIONS */
+    const TechnicalAnalysis = {
+      calculateEMA(candles, period) {
+        const res = [];
+        const mult = 2 / (period + 1);
+        let prev = null;
+        for (let i = 0; i < candles.length; i++) {
+          if (i < period - 1) { res.push({ time: candles[i].time, value: NaN }); continue; }
+          if (prev === null) {
+            let s = 0;
+            for (let j = 0; j < period; j++) s += candles[i - j].close;
+            prev = s / period;
+          } else {
+            prev = (candles[i].close - prev) * mult + prev;
+          }
+          res.push({ time: candles[i].time, value: parseFloat(prev.toFixed(2)) });
+        }
+        return res;
+      },
+
+      calculateRSI(candles, period = 14) {
+        const res = [];
+        let aG = 0, aL = 0;
+        for (let i = 0; i < candles.length; i++) {
+          if (i === 0) { res.push({ time: candles[i].time, value: 50 }); continue; }
+          const diff = candles[i].close - candles[i - 1].close;
+          const g = diff > 0 ? diff : 0;
+          const l = diff < 0 ? Math.abs(diff) : 0;
+          if (i <= period) {
+            aG += g; aL += l;
+            if (i === period) {
+              aG /= period; aL /= period;
+              const rs = aL === 0 ? 100 : aG / aL;
+              res.push({ time: candles[i].time, value: parseFloat((100 - (100 / (1 + rs))).toFixed(2)) });
+            } else { res.push({ time: candles[i].time, value: 50 }); }
+          } else {
+            aG = (aG * (period - 1) + g) / period;
+            aL = (aL * (period - 1) + l) / period;
+            const rs = aL === 0 ? 100 : aG / aL;
+            res.push({ time: candles[i].time, value: parseFloat((100 - (100 / (1 + rs))).toFixed(2)) });
+          }
+        }
+        return res;
+      },
+
+      calculateBollingerBands(candles, period = 20, mult = 2) {
+        const upper = [], middle = [], lower = [];
+        for (let i = 0; i < candles.length; i++) {
+          if (i < period - 1) {
+            upper.push({ time: candles[i].time, value: NaN });
+            middle.push({ time: candles[i].time, value: NaN });
+            lower.push({ time: candles[i].time, value: NaN });
+            continue;
+          }
+          let s = 0;
+          for (let j = 0; j < period; j++) s += candles[i - j].close;
+          const m = s / period;
+          let v = 0;
+          for (let j = 0; j < period; j++) v += Math.pow(candles[i - j].close - m, 2);
+          const dev = Math.sqrt(v / period);
+          middle.push({ time: candles[i].time, value: parseFloat(m.toFixed(2)) });
+          upper.push({ time: candles[i].time, value: parseFloat((m + mult * dev).toFixed(2)) });
+          lower.push({ time: candles[i].time, value: parseFloat((m - mult * dev).toFixed(2)) });
+        }
+        return { upper, middle, lower };
+      },
+
+      calculateATR(candles, period = 10) {
+        const res = [];
+        let p = 0;
+        for (let i = 0; i < candles.length; i++) {
+          if (i === 0) { const tr = candles[i].high - candles[i].low; res.push({ time: candles[i].time, value: tr }); p = tr; continue; }
+          const tr = Math.max(candles[i].high - candles[i].low, Math.abs(candles[i].high - candles[i - 1].close), Math.abs(candles[i].low - candles[i - 1].close));
+          p = (i < period) ? (p * i + tr) / (i + 1) : (p * (period - 1) + tr) / period;
+          res.push({ time: candles[i].time, value: parseFloat(p.toFixed(2)) });
+        }
+        return res;
+      },
+
+      calculateSupertrend(candles, period = 10, multiplier = 3.0) {
+        const atr = this.calculateATR(candles, period);
+        const res = [];
+        let pU = 0, pL = 0, trend = 1;
+        for (let i = 0; i < candles.length; i++) {
+          const c = candles[i];
+          const a = atr[i].value;
+          const bU = (c.high + c.low) / 2 + (multiplier * a);
+          const bL = (c.high + c.low) / 2 - (multiplier * a);
+          let u = bU, l = bL;
+          if (i > 0) {
+            const prevC = candles[i - 1].close;
+            u = (bU < pU || prevC > pU) ? bU : pU;
+            l = (bL > pL || prevC < pL) ? bL : pL;
+            if (trend === 1 && c.close < l) trend = -1;
+            else if (trend === -1 && c.close > u) trend = 1;
+          }
+          const val = trend === 1 ? l : u;
+          pU = u; pL = l;
+          res.push({ time: c.time, value: parseFloat(val.toFixed(2)), trend });
+        }
+        return res;
+      },
+
+      calculateMACD(candles, fast = 12, slow = 26, sig = 9) {
+        const fEma = this.calculateEMA(candles, fast);
+        const sEma = this.calculateEMA(candles, slow);
+        const line = [];
+        for (let i = 0; i < candles.length; i++) {
+          const f = fEma[i].value, s = sEma[i].value;
+          line.push({ time: candles[i].time, close: (!isNaN(f) && !isNaN(s)) ? f - s : 0 });
+        }
+        const sigLine = this.calculateEMA(line, sig);
+        const res = [];
+        for (let i = 0; i < candles.length; i++) {
+          const m = line[i].close;
+          const s = sigLine[i].value || 0;
+          res.push({ time: candles[i].time, macd: parseFloat(m.toFixed(2)), signal: parseFloat(s.toFixed(2)), histogram: parseFloat((m - s).toFixed(2)) });
+        }
+        return res;
+      },
+
+      calculateVWAP(candles) {
+        let cV = 0, cTV = 0;
+        return candles.map(c => {
+          const tp = (c.high + c.low + c.close) / 3;
+          cV += c.volume;
+          cTV += (tp * c.volume);
+          return { time: c.time, value: parseFloat((cV > 0 ? cTV / cV : tp).toFixed(2)) };
+        });
+      },
+
+      detectCandlePatterns(candles) {
+        const pats = [];
+        for (let i = 2; i < candles.length; i++) {
+          const c = candles[i], prev = candles[i - 1], prev2 = candles[i - 2];
+          const body = Math.abs(c.close - c.open);
+          const range = c.high - c.low;
+          const isG = c.close > c.open;
+          const isR = c.close < c.open;
+          const uS = c.high - Math.max(c.open, c.close);
+          const lS = Math.min(c.open, c.close) - c.low;
+
+          if (range > 0 && body / range < 0.08) pats.push({ index: i, time: c.time, type: "NEUTRAL", name: "Doji Pattern", desc: "Equilibrium between market participants." });
+          else if (range > 0 && lS >= body * 2 && uS <= body * 0.4 && isG) pats.push({ index: i, time: c.time, type: "BULLISH", name: "Hammer", desc: "Lower rejection with substantial buying shadow." });
+          else if (range > 0 && uS >= body * 2 && lS <= body * 0.4 && isR) pats.push({ index: i, time: c.time, type: "BEARISH", name: "Shooting Star", desc: "Higher rejection after an upward probe." });
+          else if (prev.close < prev.open && isG && c.close >= prev.open && body > (prev.open - prev.close)) pats.push({ index: i, time: c.time, type: "BULLISH", name: "Bullish Engulfing", desc: "Buyers overpower preceding down-bar range." });
+          else if (prev.close > prev.open && isR && c.close <= prev.open && body > (prev.close - prev.open)) pats.push({ index: i, time: c.time, type: "BEARISH", name: "Bearish Engulfing", desc: "Sellers fully engulf preceding up-bar body." });
+          else if (prev2.close < prev2.open && isG && c.close > (prev2.open + prev2.close) / 2) pats.push({ index: i, time: c.time, type: "BULLISH", name: "Morning Star", desc: "Three-candle bullish reversal structure." });
+        }
+        return pats;
+      },
+
+      calculateSupportResistance(candles) {
+        const last = candles[candles.length - 1].close;
+        const highs = candles.slice(-50).map(c => c.high);
+        const lows = candles.slice(-50).map(c => c.low);
+        const maxH = Math.max(...highs);
+        const minL = Math.min(...lows);
+        return {
+          r2: parseFloat((last + (maxH - last) * 0.9).toFixed(2)),
+          r1: parseFloat((last + (maxH - last) * 0.5).toFixed(2)),
+          s1: parseFloat((last - (last - minL) * 0.5).toFixed(2)),
+          s2: parseFloat((last - (last - minL) * 0.9).toFixed(2)),
+          pivot: parseFloat(((maxH + minL + last) / 3).toFixed(2))
+        };
+      }
+    };
+
+    /* 4. SIGNAL CONFLUENCE EVALUATOR */
+    const SignalEngine = {
+      evaluate(candles, ind) {
+        const last = candles.length - 1;
+        const rsi = ind.rsi[last].value;
+        const macd = ind.macd[last];
+        const st = ind.supertrend[last];
+        const ema200 = ind.ema200[last].value;
+        const c = candles[last];
+
+        let score = 0;
+        if (rsi < 35) score += 2; else if (rsi > 65) score -= 2; else if (rsi > 50) score += 1; else score -= 1;
+        if (macd.histogram > 0) score += 2; else score -= 2;
+        if (st.trend === 1) score += 2; else score -= 2;
+        if (c.close > ema200) score += 2; else score -= 2;
+
+        let verdict = "Neutral", seg = "seg-neutral";
+        if (score >= 5) { verdict = "Strongly Bullish"; seg = "seg-strong-buy"; }
+        else if (score >= 2) { verdict = "Bullish Setup"; seg = "seg-buy"; }
+        else if (score <= -5) { verdict = "Strongly Bearish"; seg = "seg-strong-sell"; }
+        else if (score <= -2) { verdict = "Bearish Setup"; seg = "seg-sell"; }
+
+        return { score, verdict, seg, rsi, macd, st, ema200 };
+      },
+
+      generateMarkers(candles, pats) {
+        const markers = [];
+        pats.forEach(p => {
+          if (p.type === "BULLISH") {
+            const txt = COMPLIANCE_MODE === "EDUCATIONAL" ? "Bullish Setup" : "Bullish Signal";
+            markers.push({ time: p.time, position: 'belowBar', color: '#089981', shape: 'arrowUp', text: `${txt}: ${p.name}` });
+          } else if (p.type === "BEARISH") {
+            const txt = COMPLIANCE_MODE === "EDUCATIONAL" ? "Bearish Setup" : "Bearish Signal";
+            markers.push({ time: p.time, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: `${txt}: ${p.name}` });
+          }
+        });
+        markers.sort((a, b) => a.time - b.time);
+        return markers;
+      }
+    };
+
+    /* 5. CHART CONTROLLER */
+    class ChartController {
+      constructor() {
+        this.chart = null;
+        this.csSeries = null;
+        this.volSeries = null;
+        this.seriesMap = {};
+        this.priceLines = [];
+        this.currentData = [];
+        this.ind = {};
+      }
+
+      init() {
+        const el = document.getElementById('tv-chart-container');
+        if (!el) return;
+        el.innerHTML = "";
+        const isDark = document.body.getAttribute('data-theme') !== 'light';
+
+        if (typeof LightweightCharts !== 'undefined') {
+          try {
+            this.chart = LightweightCharts.createChart(el, {
+              width: el.clientWidth || 800,
+              height: el.clientHeight || 450,
+              layout: {
+                background: { color: isDark ? '#0e1117' : '#ffffff' },
+                textColor: isDark ? '#868996' : '#5d606b',
+                fontFamily: "'Inter', sans-serif"
+              },
+              grid: {
+                vertLines: { color: isDark ? '#1a1f2c' : '#f0f3fa' },
+                horzLines: { color: isDark ? '#1a1f2c' : '#f0f3fa' }
+              },
+              timeScale: { borderColor: isDark ? '#2a2e39' : '#d6dce7', timeVisible: true }
+            });
+
+            this.csSeries = this.chart.addCandlestickSeries({
+              upColor: '#089981', downColor: '#f23645', borderVisible: false,
+              wickUpColor: '#089981', wickDownColor: '#f23645'
+            });
+
+            this.volSeries = this.chart.addHistogramSeries({
+              color: '#26a69a', priceFormat: { type: 'volume' }, priceScaleId: 'volume'
+            });
+            this.chart.priceScale('volume').applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+
+            this.seriesMap.ema9 = this.chart.addLineSeries({ color: '#2962ff', lineWidth: 1 });
+            this.seriesMap.ema21 = this.chart.addLineSeries({ color: '#ffb703', lineWidth: 1 });
+            this.seriesMap.ema50 = this.chart.addLineSeries({ color: '#00b4d8', lineWidth: 1.5 });
+            this.seriesMap.ema200 = this.chart.addLineSeries({ color: '#9d4edd', lineWidth: 2 });
+            this.seriesMap.bbU = this.chart.addLineSeries({ color: 'rgba(41,98,255,0.4)', lineWidth: 1, lineStyle: 2 });
+            this.seriesMap.bbL = this.chart.addLineSeries({ color: 'rgba(41,98,255,0.4)', lineWidth: 1, lineStyle: 2 });
+            this.seriesMap.st = this.chart.addLineSeries({ color: '#089981', lineWidth: 2 });
+            this.seriesMap.vwap = this.chart.addLineSeries({ color: '#ff9800', lineWidth: 1.5, lineStyle: 1 });
+
+            window.addEventListener('resize', () => {
+              if (this.chart && el) this.chart.applyOptions({ width: el.clientWidth, height: el.clientHeight });
+            });
+            return;
+          } catch (e) {
+            console.warn("LightweightCharts initialization fallback:", e);
+          }
+        }
+
+        // Native Canvas Fallback if CDN is offline or blocked
+        el.innerHTML = '<canvas id="fallback-main-canvas" style="width:100%;height:100%;display:block;"></canvas>';
+        window.addEventListener('resize', () => {
+          if (this.currentData.length > 0) this.renderFallbackCanvas(this.currentData);
+        });
+      }
+
+      renderFallbackCanvas(candles) {
+        const cv = document.getElementById('fallback-main-canvas');
+        if (!cv) return;
+        cv.width = cv.parentElement.clientWidth;
+        cv.height = cv.parentElement.clientHeight;
+        const ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, cv.width, cv.height);
+
+        const visible = candles.slice(-80);
+        const highs = visible.map(c => c.high);
+        const lows = visible.map(c => c.low);
+        const minP = Math.min(...lows) * 0.998;
+        const maxP = Math.max(...highs) * 1.002;
+        const range = maxP - minP || 1;
+
+        const w = cv.width - 60;
+        const h = cv.height;
+        const barW = Math.max(2, (w / visible.length) * 0.7);
+        const step = w / visible.length;
+
+        visible.forEach((c, i) => {
+          const x = i * step + step / 2;
+          const openY = h - (((c.open - minP) / range) * (h - 60) + 40);
+          const closeY = h - (((c.close - minP) / range) * (h - 60) + 40);
+          const highY = h - (((c.high - minP) / range) * (h - 60) + 40);
+          const lowY = h - (((c.low - minP) / range) * (h - 60) + 40);
+
+          const isG = c.close >= c.open;
+          ctx.strokeStyle = isG ? '#089981' : '#f23645';
+          ctx.fillStyle = isG ? '#089981' : '#f23645';
+
+          // Wick
+          ctx.beginPath();
+          ctx.moveTo(x, highY);
+          ctx.lineTo(x, lowY);
+          ctx.stroke();
+
+          // Body
+          const top = Math.min(openY, closeY);
+          const bodyH = Math.max(1.5, Math.abs(closeY - openY));
+          ctx.fillRect(x - barW / 2, top, barW, bodyH);
+        });
+      }
+
+      load(candles) {
+        this.currentData = candles;
+        if (this.csSeries) {
+          try {
+            this.csSeries.setData(candles);
+            this.volSeries.setData(candles.map(c => ({
+              time: c.time, value: c.volume,
+              color: c.close >= c.open ? 'rgba(8, 153, 129, 0.3)' : 'rgba(242, 54, 69, 0.3)'
+            })));
+          } catch (e) {}
+        } else {
+          this.renderFallbackCanvas(candles);
+        }
+
+        this.ind.ema9 = TechnicalAnalysis.calculateEMA(candles, 9);
+        this.ind.ema21 = TechnicalAnalysis.calculateEMA(candles, 21);
+        this.ind.ema50 = TechnicalAnalysis.calculateEMA(candles, 50);
+        this.ind.ema200 = TechnicalAnalysis.calculateEMA(candles, 200);
+        this.ind.bb = TechnicalAnalysis.calculateBollingerBands(candles, 20, 2);
+        this.ind.supertrend = TechnicalAnalysis.calculateSupertrend(candles, 10, 3.0);
+        this.ind.vwap = TechnicalAnalysis.calculateVWAP(candles);
+        this.ind.rsi = TechnicalAnalysis.calculateRSI(candles, 14);
+        this.ind.macd = TechnicalAnalysis.calculateMACD(candles, 12, 26, 9);
+        this.ind.sr = TechnicalAnalysis.calculateSupportResistance(candles);
+
+        this.updateVisibility();
+
+        const pats = TechnicalAnalysis.detectCandlePatterns(candles);
+        const markers = SignalEngine.generateMarkers(candles, pats);
+        if (this.csSeries) {
+          try { this.csSeries.setMarkers(markers); } catch (e) {}
+        }
+
+        this.renderSRLines();
+        this.renderCanvases();
+        this.updateDock(candles, pats);
+
+        this.chart.timeScale().fitContent();
+      }
+
+      updateVisibility() {
+        const ind = USER_STATE.indicators;
+        this.seriesMap.ema9.setData(ind.ema ? this.ind.ema9.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.ema21.setData(ind.ema ? this.ind.ema21.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.ema50.setData(ind.ema ? this.ind.ema50.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.ema200.setData(ind.ema ? this.ind.ema200.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.bbU.setData(ind.bb ? this.ind.bb.upper.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.bbL.setData(ind.bb ? this.ind.bb.lower.filter(d => !isNaN(d.value)) : []);
+        this.seriesMap.st.setData(ind.supertrend ? this.ind.supertrend : []);
+        this.seriesMap.vwap.setData(ind.vwap ? this.ind.vwap : []);
+
+        const rsiPane = document.getElementById('rsi-sub-pane');
+        const macdPane = document.getElementById('macd-sub-pane');
+        if (rsiPane) rsiPane.style.display = ind.rsi ? 'block' : 'none';
+        if (macdPane) macdPane.style.display = ind.macd ? 'block' : 'none';
+        this.renderSRLines();
+      }
+
+      renderSRLines() {
+        this.priceLines.forEach(pl => { try { this.csSeries.removePriceLine(pl); } catch (e) {} });
+        this.priceLines = [];
+        if (!USER_STATE.indicators.sr || !this.ind.sr) return;
+
+        const sr = this.ind.sr;
+        this.priceLines.push(this.csSeries.createPriceLine({ price: sr.r2, color: 'rgba(242,54,69,0.7)', lineWidth: 1, lineStyle: 2, title: 'R2' }));
+        this.priceLines.push(this.csSeries.createPriceLine({ price: sr.r1, color: 'rgba(242,54,69,0.9)', lineWidth: 1, title: 'R1' }));
+        this.priceLines.push(this.csSeries.createPriceLine({ price: sr.pivot, color: 'rgba(41,98,255,0.7)', lineWidth: 1, lineStyle: 3, title: 'Pivot' }));
+        this.priceLines.push(this.csSeries.createPriceLine({ price: sr.s1, color: 'rgba(8,153,129,0.9)', lineWidth: 1, title: 'S1' }));
+        this.priceLines.push(this.csSeries.createPriceLine({ price: sr.s2, color: 'rgba(8,153,129,0.7)', lineWidth: 1, lineStyle: 2, title: 'S2' }));
+      }
+
+      renderCanvases() {
+        // RSI Canvas
+        const rEl = document.getElementById('rsi-canvas-container');
+        if (rEl && USER_STATE.indicators.rsi) {
+          rEl.innerHTML = `<canvas id="rsi-c" style="width:100%;height:100%;"></canvas>`;
+          const c = document.getElementById('rsi-c');
+          c.width = rEl.clientWidth; c.height = rEl.clientHeight;
+          const ctx = c.getContext('2d');
+          const d = this.ind.rsi.slice(-70);
+          if (d.length > 1) {
+            ctx.clearRect(0, 0, c.width, c.height);
+            const y70 = c.height * 0.3, y30 = c.height * 0.7;
+            ctx.fillStyle = 'rgba(41,98,255,0.06)'; ctx.fillRect(0, y70, c.width, y30 - y70);
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.setLineDash([3, 3]);
+            ctx.beginPath(); ctx.moveTo(0, y70); ctx.lineTo(c.width, y70); ctx.moveTo(0, y30); ctx.lineTo(c.width, y30); ctx.stroke();
+            ctx.setLineDash([]); ctx.strokeStyle = '#9d4edd'; ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            const step = c.width / (d.length - 1);
+            d.forEach((pt, i) => {
+              const y = c.height - ((pt.value / 100) * c.height);
+              if (i === 0) ctx.moveTo(0, y); else ctx.lineTo(i * step, y);
+            });
+            ctx.stroke();
+            const lastVal = d[d.length - 1].value;
+            document.getElementById('rsi-current-reading').innerText = lastVal.toFixed(1);
+          }
+        }
+
+        // MACD Canvas
+        const mEl = document.getElementById('macd-canvas-container');
+        if (mEl && USER_STATE.indicators.macd) {
+          mEl.innerHTML = `<canvas id="macd-c" style="width:100%;height:100%;"></canvas>`;
+          const c = document.getElementById('macd-c');
+          c.width = mEl.clientWidth; c.height = mEl.clientHeight;
+          const ctx = c.getContext('2d');
+          const d = this.ind.macd.slice(-70);
+          if (d.length > 1) {
+            ctx.clearRect(0, 0, c.width, c.height);
+            const mid = c.height * 0.5;
+            ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+            ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(c.width, mid); ctx.stroke();
+            const max = Math.max(...d.map(x => Math.abs(x.histogram)), 1);
+            const step = c.width / d.length;
+            d.forEach((pt, i) => {
+              const h = (pt.histogram / max) * (mid * 0.85);
+              ctx.fillStyle = pt.histogram >= 0 ? '#089981' : '#f23645';
+              if (pt.histogram >= 0) ctx.fillRect(i * step + 1, mid - h, step - 2, h);
+              else ctx.fillRect(i * step + 1, mid, step - 2, Math.abs(h));
+            });
+            const l = d[d.length - 1];
+            document.getElementById('macd-current-reading').innerText = `${l.macd >= 0 ? '+' : ''}${l.macd.toFixed(2)}`;
+            document.getElementById('macd-signal-reading').innerText = `Sig: ${l.signal >= 0 ? '+' : ''}${l.signal.toFixed(2)}`;
+          }
+        }
+      }
+
+      updateDock(candles, pats) {
+        const last = candles[candles.length - 1];
+        const prev = candles[candles.length - 2];
+        const chg = ((last.close - prev.close) / prev.close) * 100;
+        const diff = last.close - prev.close;
+
+        document.getElementById('current-price-val').innerText = `₹${last.close.toFixed(2)}`;
+        const chgEl = document.getElementById('current-change-val');
+        chgEl.innerText = `${chg >= 0 ? '+' : ''}${chg.toFixed(2)}% (${diff >= 0 ? '+₹' : '-₹'}${Math.abs(diff).toFixed(2)})`;
+        chgEl.className = `live-change ${chg >= 0 ? 'color-bullish bg-bullish-subtle' : 'color-bearish bg-bearish-subtle'}`;
+
+        const evalRes = SignalEngine.evaluate(candles, this.ind);
+        const stBadge = document.getElementById('strength-badge');
+        stBadge.innerText = evalRes.verdict;
+        stBadge.className = `status-verdict ${evalRes.score >= 0 ? 'color-bullish bg-bullish-subtle' : 'color-bearish bg-bearish-subtle'}`;
+
+        document.querySelectorAll('.gauge-seg').forEach(el => el.classList.remove('active'));
+        const seg = document.getElementById(evalRes.seg);
+        if (seg) seg.classList.add('active');
+
+        document.getElementById('chk-rsi').innerText = `${evalRes.rsi.toFixed(1)} (${evalRes.rsi < 35 ? 'Oversold' : (evalRes.rsi > 65 ? 'Overbought' : 'Neutral')})`;
+        document.getElementById('chk-macd').innerText = evalRes.macd.histogram >= 0 ? "Positive Histogram Cross" : "Negative Divergence";
+        document.getElementById('chk-ema').innerText = last.close > evalRes.ema200 ? "Above 200 EMA" : "Below 200 EMA";
+        document.getElementById('chk-st').innerText = evalRes.st.trend === 1 ? `Bullish (Floor ₹${evalRes.st.value})` : `Bearish (Cap ₹${evalRes.st.value})`;
+
+        const sr = this.ind.sr;
+        if (sr) {
+          document.getElementById('lvl-r2').innerText = `₹${sr.r2.toFixed(2)}`;
+          document.getElementById('lvl-r1').innerText = `₹${sr.r1.toFixed(2)}`;
+          document.getElementById('lvl-curr').innerText = `₹${last.close.toFixed(2)}`;
+          document.getElementById('lvl-pivot').innerText = `₹${sr.pivot.toFixed(2)}`;
+          document.getElementById('lvl-s1').innerText = `₹${sr.s1.toFixed(2)}`;
+          document.getElementById('lvl-s2').innerText = `₹${sr.s2.toFixed(2)}`;
+        }
+
+        const patBox = document.getElementById('patterns-container');
+        if (patBox) {
+          const recent = pats.slice(-3).reverse();
+          if (recent.length === 0) {
+            patBox.innerHTML = `<div style="font-size:10.5px; color:var(--text-muted); padding:4px 0;">No active pattern on latest bar.</div>`;
+          } else {
+            patBox.innerHTML = recent.map(p => `
+              <div class="pattern-item">
+                <div class="p-top"><span>${p.name}</span><span class="${p.type === 'BULLISH' ? 'color-bullish' : (p.type === 'BEARISH' ? 'color-bearish' : '')}">${p.type}</span></div>
+                <div class="p-desc">${p.desc}</div>
+              </div>
+            `).join("");
+          }
+        }
+      }
+    }
+
+    /* 6. PRO MODULES */
+    const ProModules = {
+      initMTF() {
+        ['1d', '1h', '15m'].forEach(tf => {
+          const el = document.getElementById(`mtf-chart-${tf}`);
+          if (!el) return;
+          el.innerHTML = "";
+          const isDark = document.body.getAttribute('data-theme') !== 'light';
+          const c = LightweightCharts.createChart(el, {
+            width: el.clientWidth || 300, height: el.clientHeight || 200,
+            layout: { background: { color: isDark ? '#131722' : '#ffffff' }, textColor: isDark ? '#868996' : '#5d606b', fontSize: 10 },
+            grid: { vertLines: { color: isDark ? '#1a1f2c' : '#f0f3fa' }, horzLines: { color: isDark ? '#1a1f2c' : '#f0f3fa' } },
+            timeScale: { borderColor: isDark ? '#2a2e39' : '#d6dce7' }
+          });
+          const s = c.addCandlestickSeries({ upColor: '#089981', downColor: '#f23645', borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645' });
+          const symObj = SYMBOL_UNIVERSE.find(x => x.symbol === USER_STATE.activeSymbol) || SYMBOL_UNIVERSE[0];
+          s.setData(generateCandleData(symObj, tf.toUpperCase(), 80));
+          c.timeScale().fitContent();
+        });
+      },
+
+      runBacktest() {
+        const symKey = document.getElementById('bt-sym').value;
+        const initialCap = parseFloat(document.getElementById('bt-cap').value) || 100000;
+        const days = parseInt(document.getElementById('bt-period').value) || 365;
+        const sym = SYMBOL_UNIVERSE.find(s => s.symbol === symKey) || SYMBOL_UNIVERSE[0];
+        const candles = generateCandleData(sym, "1D", days);
+
+        const ema9 = TechnicalAnalysis.calculateEMA(candles, 9);
+        const ema21 = TechnicalAnalysis.calculateEMA(candles, 21);
+        const ema200 = TechnicalAnalysis.calculateEMA(candles, 200);
+
+        let cap = initialCap, peak = initialCap, maxDD = 0;
+        let inPos = false, entryP = 0, entryT = 0, shares = 0;
+        const trades = [];
+        const curve = [{ time: candles[0].time, value: initialCap }];
+
+        for (let i = 20; i < candles.length; i++) {
+          const c = candles[i];
+          const buySig = (ema9[i].value > ema21[i].value && ema9[i - 1].value <= ema21[i - 1].value && c.close > ema200[i].value);
+          const sellSig = (ema9[i].value < ema21[i].value);
+
+          if (!inPos && buySig) {
+            inPos = true; entryP = c.close; entryT = c.time; shares = Math.floor((cap * 0.95) / entryP);
+          } else if (inPos && sellSig) {
+            inPos = false;
+            const pnl = (c.close - entryP) * shares;
+            cap += pnl;
+            trades.push({ entryT, exitT: c.time, entryP, exitP: c.close, pnl, pct: ((c.close - entryP) / entryP) * 100 });
+          }
+
+          const eq = inPos ? cap + ((c.close - entryP) * shares) : cap;
+          if (eq > peak) peak = eq;
+          const dd = ((peak - eq) / peak) * 100;
+          if (dd > maxDD) maxDD = dd;
+          curve.push({ time: c.time, value: eq });
+        }
+
+        const wins = trades.filter(t => t.pnl > 0).length;
+        const total = trades.length;
+        const wr = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
+        const net = cap - initialCap;
+        const netPct = ((net / initialCap) * 100).toFixed(1);
+
+        document.getElementById('bt-wr').innerText = `${wr}%`;
+        const pnlEl = document.getElementById('bt-pnl');
+        pnlEl.innerText = `${net >= 0 ? '+₹' : '-₹'}${Math.abs(Math.round(net)).toLocaleString('en-IN')} (${net >= 0 ? '+' : ''}${netPct}%)`;
+        pnlEl.className = `m-val ${net >= 0 ? 'color-bullish' : 'color-bearish'}`;
+        document.getElementById('bt-dd').innerText = `-${maxDD.toFixed(1)}%`;
+        document.getElementById('bt-trades').innerText = `${total} (${wins}W / ${total - wins}L)`;
+
+        this.drawEquityCurve(curve, initialCap);
+        this.lastTrades = trades;
+        showToast("Backtest executed successfully.");
+      },
+
+      drawEquityCurve(curve, base) {
+        const cv = document.getElementById('equity-curve-canvas');
+        if (!cv) return;
+        cv.width = cv.parentElement.clientWidth; cv.height = cv.parentElement.clientHeight;
+        const ctx = cv.getContext('2d');
+        ctx.clearRect(0, 0, cv.width, cv.height);
+        const vals = curve.map(c => c.value);
+        const min = Math.min(...vals, base * 0.9), max = Math.max(...vals, base * 1.1), rng = max - min || 1;
+
+        ctx.strokeStyle = '#089981'; ctx.lineWidth = 2; ctx.beginPath();
+        const step = cv.width / (curve.length - 1);
+        curve.forEach((pt, i) => {
+          const y = cv.height - (((pt.value - min) / rng) * (cv.height - 20) + 10);
+          if (i === 0) ctx.moveTo(0, y); else ctx.lineTo(i * step, y);
+        });
+        ctx.stroke();
+      },
+
+      calcPosition() {
+        const cap = parseFloat(document.getElementById('calc-cap').value) || 0;
+        const rPct = parseFloat(document.getElementById('calc-risk').value) || 0;
+        const ent = parseFloat(document.getElementById('calc-entry').value) || 0;
+        const stp = parseFloat(document.getElementById('calc-stop').value) || 0;
+        const rAmt = cap * (rPct / 100);
+        const rPerShare = Math.abs(ent - stp);
+        const qty = rPerShare > 0 ? Math.floor(rAmt / rPerShare) : 0;
+        document.getElementById('res-risk-amt').innerText = `₹${rAmt.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+        document.getElementById('res-risk-share').innerText = `₹${rPerShare.toFixed(2)}`;
+        document.getElementById('res-qty').innerText = `${qty} Units`;
+        document.getElementById('res-exposure').innerText = `₹${(qty * ent).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+      },
+
+      renderScreener() {
+        const tb = document.getElementById('screener-tbody');
+        if (!tb) return;
+        tb.innerHTML = "";
+        const asset = document.getElementById('sc-asset').value;
+        const rsiF = document.getElementById('sc-rsi').value;
+        const trF = document.getElementById('sc-trend').value;
+
+        SYMBOL_UNIVERSE.forEach(s => {
+          if (asset !== "ALL" && s.category !== asset) return;
+          const c = generateCandleData(s, "1D", 60);
+          const last = c[c.length - 1], prev = c[c.length - 2];
+          const chg = ((last.close - prev.close) / prev.close) * 100;
+          const rsi = TechnicalAnalysis.calculateRSI(c, 14).pop().value;
+          const st = TechnicalAnalysis.calculateSupertrend(c).pop();
+          const ema200 = TechnicalAnalysis.calculateEMA(c, 200).pop().value;
+
+          if (rsiF === "OVERSOLD" && rsi >= 35) return;
+          if (rsiF === "OVERBOUGHT" && rsi <= 65) return;
+          if (trF === "ST_GREEN" && st.trend !== 1) return;
+          if (trF === "ST_RED" && st.trend !== -1) return;
+          if (trF === "ABOVE_EMA200" && last.close <= ema200) return;
+
+          const tr = document.createElement('tr');
+          tr.onclick = () => selectSymbol(s.symbol);
+          tr.innerHTML = `
+            <td><strong>${s.symbol}</strong></td>
+            <td><span class="ind-pill" style="font-size:9px; padding:1px 4px;">${s.category}</span></td>
+            <td style="font-family:var(--font-mono);">₹${last.close.toFixed(s.tickDecimals)}</td>
+            <td class="${chg >= 0 ? 'color-bullish' : 'color-bearish'}" style="font-family:var(--font-mono);">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</td>
+            <td class="${rsi < 35 ? 'color-bullish' : (rsi > 65 ? 'color-bearish' : '')}" style="font-family:var(--font-mono);">${rsi.toFixed(1)}</td>
+            <td><span class="color-bullish">Bullish</span></td>
+            <td>${last.close > ema200 ? '<span class="color-bullish">Above</span>' : '<span class="color-bearish">Below</span>'}</td>
+            <td><span class="${st.trend === 1 ? 'color-bullish' : 'color-bearish'}">${st.trend === 1 ? 'Green' : 'Red'}</span></td>
+            <td><button class="ind-pill" style="font-size:9.5px; padding:2px 6px;">Load</button></td>
+          `;
+          tb.appendChild(tr);
+        });
+      },
+
+      renderWatchlist() {
+        const box = document.getElementById('watchlist-container');
+        if (!box) return;
+        box.innerHTML = "";
+        USER_STATE.watchlist.forEach(sym => {
+          const s = SYMBOL_UNIVERSE.find(x => x.symbol === sym) || { symbol: sym, basePrice: 1000, tickDecimals: 2 };
+          const c = generateCandleData(s, "1D", 25);
+          const last = c[c.length - 1], prev = c[c.length - 2];
+          const chg = ((last.close - prev.close) / prev.close) * 100;
+
+          const row = document.createElement('div');
+          row.className = "wl-row";
+          row.onclick = () => selectSymbol(s.symbol);
+          row.innerHTML = `
+            <div><div style="font-weight:700; font-size:12px;">${s.symbol}</div><div style="font-size:9px; color:var(--text-muted);">₹${last.close.toFixed(s.tickDecimals)}</div></div>
+            <canvas class="wl-sparkline" id="spk-${s.symbol.replace(/[\/\s]/g, '_')}"></canvas>
+            <div class="${chg >= 0 ? 'color-bullish' : 'color-bearish'}" style="font-family:var(--font-mono); font-size:11px; font-weight:600;">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</div>
+          `;
+          box.appendChild(row);
+
+          setTimeout(() => {
+            const cv = document.getElementById(`spk-${s.symbol.replace(/[\/\s]/g, '_')}`);
+            if (cv) {
+              cv.width = 64; cv.height = 22;
+              const ctx = cv.getContext('2d');
+              const prices = c.map(x => x.close);
+              const minP = Math.min(...prices), maxP = Math.max(...prices), rng = maxP - minP || 1;
+              ctx.strokeStyle = chg >= 0 ? '#089981' : '#f23645'; ctx.lineWidth = 1.3;
+              ctx.beginPath();
+              prices.forEach((p, i) => {
+                const x = (i / (prices.length - 1)) * cv.width;
+                const y = cv.height - (((p - minP) / rng) * (cv.height - 4) + 2);
+                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+              });
+              ctx.stroke();
+            }
+          }, 10);
+        });
+      },
+
+      renderJournal() {
+        const tb = document.getElementById('journal-tbody');
+        if (!tb) return;
+        tb.innerHTML = "";
+        if (USER_STATE.journal.length === 0) {
+          tb.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:16px;">No study entries recorded yet. Click "+ New Study Note" above.</td></tr>`;
+          return;
+        }
+        USER_STATE.journal.forEach((j, i) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${j.date}</td><td><strong>${j.symbol}</strong></td><td><span class="ind-pill" style="font-size:9px;">${j.tf}</span></td>
+            <td>${j.setup}</td><td>${j.reason}</td><td class="color-bullish">${j.outcome}</td>
+            <td><button class="ind-pill" onclick="deleteJournal(${i})" style="color:var(--bearish); padding:1px 5px;">Delete</button></td>
+          `;
+          tb.appendChild(tr);
+        });
+      }
+    };
+
+    /* 7. COMPLIANCE CONTROLLER */
+    function setComplianceMode(mode) {
+      COMPLIANCE_MODE = mode;
+      const pill = document.getElementById('header-compliance-pill');
+      const label = document.getElementById('header-compliance-label');
+      const footer = document.getElementById('footer-disclaimer-text');
+      const legal = document.getElementById('legal-statutory-notice');
+      const sebiBox = document.getElementById('sebi-detail-box');
+
+      if (mode === "SEBI_REGISTERED") {
+        pill.className = "compliance-pill sebi";
+        label.innerText = `SEBI REG. ${SEBI_CONFIG.regType.toUpperCase()}: ${SEBI_CONFIG.regNo}`;
+        footer.innerHTML = `
+          <strong>SEBI Registered Research Analyst: ${SEBI_CONFIG.regNo}</strong> | Entity: ${SEBI_CONFIG.ownerName} | Validity: ${SEBI_CONFIG.validity}.
+          Investments in securities market are subject to market risks. Read all related documents carefully before investing. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors.
+        `;
+        legal.innerHTML = `
+          <strong>SEBI Registered Status:</strong> Registration granted by SEBI (${SEBI_CONFIG.regNo}) and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors. All content is strictly research analysis.
+        `;
+        if (sebiBox) sebiBox.style.display = "flex";
+      } else {
+        pill.className = "compliance-pill educational";
+        label.innerText = "EDUCATIONAL MODE";
+        footer.innerText = `
+          Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides technical analysis tools for educational and informational purposes only. It is not investment advice or a research recommendation. We are not registered as an Investment Adviser or Research Analyst with SEBI.
+        `;
+        legal.innerHTML = `
+          <strong>Educational Mode Status:</strong> ZenithPulse Analytics&trade; is not registered as an Investment Adviser or Research Analyst with SEBI. Nothing on this platform constitutes an investment recommendation, buy/sell call, price target, or financial advisory service.
+        `;
+        if (sebiBox) sebiBox.style.display = "none";
+      }
+
+      if (window.chartCtrl && window.chartCtrl.currentData.length > 0) {
+        window.chartCtrl.load(window.chartCtrl.currentData);
+      }
+    }
+
+    /* 8. UI HELPERS & DISPATCHERS */
+    let chartCtrl = null;
+
+    function selectSymbol(symKey) {
+      const sym = SYMBOL_UNIVERSE.find(s => s.symbol === symKey);
+      if (!sym) return;
+      USER_STATE.activeSymbol = sym.symbol;
+      USER_STATE.activeExchange = sym.exchange;
+      document.getElementById('current-symbol-display').innerText = sym.symbol;
+      document.getElementById('current-exchange-display').innerText = sym.exchange;
+      document.getElementById('wm-symbol-text').innerText = sym.symbol;
+      const ban = document.getElementById('leveraged-risk-banner');
+      if (ban) ban.style.display = sym.isLeveraged ? "flex" : "none";
+
+      const data = generateCandleData(sym, USER_STATE.activeTimeframe, 180);
+      chartCtrl.load(data);
+      document.getElementById('modal-symbol-search').classList.remove('active');
+      showToast(`Loaded ${sym.symbol} (${sym.exchange})`);
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast-notification');
+      if (!t) return;
+      t.innerText = msg; t.style.display = "block";
+      setTimeout(() => { t.style.display = "none"; }, 3000);
+    }
+
+    function activateDemoPro(plan) {
+      USER_STATE.isPro = true;
+      document.getElementById('pro-btn-text').innerText = "PRO ACTIVE";
+      document.getElementById('btn-pro-upgrade').classList.add('pro-active');
+      document.getElementById('modal-pro-upgrade').classList.remove('active');
+      showToast(`ZenithPulse Pro&trade; (${plan}) active in demo mode.`);
+    }
+
+    function deleteJournal(idx) {
+      USER_STATE.journal.splice(idx, 1);
+      localStorage.setItem('zenith_jn', JSON.stringify(USER_STATE.journal));
+      ProModules.renderJournal();
+      showToast("Note deleted.");
+    }
+
+    /* 9. LIFECYCLE INITIALIZATION */
+    window.addEventListener('DOMContentLoaded', () => {
+      // First visit modal
+      if (!localStorage.getItem('zenith_ack')) {
+        document.getElementById('modal-compliance-welcome').classList.add('active');
+      }
+      document.getElementById('btn-accept-compliance').addEventListener('click', () => {
+        localStorage.setItem('zenith_ack', 'true');
+        document.getElementById('modal-compliance-welcome').classList.remove('active');
+      });
+
+      // Load local storage
+      try {
+        const j = localStorage.getItem('zenith_jn');
+        if (j) USER_STATE.journal = JSON.parse(j);
+        const th = localStorage.getItem('zenith_th');
+        if (th) { USER_STATE.theme = th; document.body.setAttribute('data-theme', th); }
+      } catch (e) {}
+
+      // Init chart
+      chartCtrl = new ChartController();
+      window.chartCtrl = chartCtrl;
+      chartCtrl.init();
+      chartCtrl.load(generateCandleData(SYMBOL_UNIVERSE[0], "1D", 180));
+
+      ProModules.renderWatchlist();
+      ProModules.renderScreener();
+      ProModules.calcPosition();
+      ProModules.renderJournal();
+      setComplianceMode(COMPLIANCE_MODE);
+
+      // Nav routing
+      document.querySelectorAll('#sidebar .nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const vId = btn.getAttribute('data-view');
+          if (!vId) return;
+          document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+          const target = document.getElementById(vId);
+          if (target) target.classList.add('active');
+          if (vId === 'mtf-view') ProModules.initMTF();
+          if (vId === 'screener-view') ProModules.renderScreener();
+        });
+      });
+
+      // Timeframe buttons
+      document.querySelectorAll('#tf-group .tf-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('#tf-group .tf-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          USER_STATE.activeTimeframe = btn.getAttribute('data-tf');
+          const sym = SYMBOL_UNIVERSE.find(s => s.symbol === USER_STATE.activeSymbol) || SYMBOL_UNIVERSE[0];
+          chartCtrl.load(generateCandleData(sym, USER_STATE.activeTimeframe, 180));
+        });
+      });
+
+      // Indicators toggle
+      document.querySelectorAll('.ind-pill[data-ind]').forEach(pill => {
+        pill.addEventListener('click', () => {
+          const k = pill.getAttribute('data-ind');
+          USER_STATE.indicators[k] = !USER_STATE.indicators[k];
+          pill.classList.toggle('active', USER_STATE.indicators[k]);
+          chartCtrl.updateVisibility();
+        });
+      });
+
+      // Right dock tabs
+      document.querySelectorAll('.dock-tab-btn').forEach(tb => {
+        tb.addEventListener('click', () => {
+          document.querySelectorAll('.dock-tab-btn').forEach(b => b.classList.remove('active'));
+          tb.classList.add('active');
+          const dName = tb.getAttribute('data-dock');
+          document.querySelectorAll('.dock-pane').forEach(p => p.classList.remove('active'));
+          const p = document.getElementById(`dock-pane-${dName}`);
+          if (p) p.classList.add('active');
+        });
+      });
+
+      document.getElementById('btn-toggle-right-dock').addEventListener('click', () => {
+        document.getElementById('app').classList.toggle('right-dock-collapsed');
+      });
+
+      document.getElementById('btn-theme-toggle').addEventListener('click', () => {
+        const cur = document.body.getAttribute('data-theme') || 'dark';
+        const next = cur === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        USER_STATE.theme = next;
+        localStorage.setItem('zenith_th', next);
+        chartCtrl.init();
+        chartCtrl.load(chartCtrl.currentData);
+      });
+
+      document.getElementById('btn-pro-upgrade').addEventListener('click', () => {
+        document.getElementById('modal-pro-upgrade').classList.add('active');
+      });
+
+      document.getElementById('btn-open-search').addEventListener('click', () => {
+        document.getElementById('modal-symbol-search').classList.add('active');
+        renderSearchList("ALL", "");
+      });
+      document.getElementById('btn-wl-add').addEventListener('click', () => {
+        document.getElementById('modal-symbol-search').classList.add('active');
+        renderSearchList("ALL", "");
+      });
+
+      document.getElementById('symbol-search-input').addEventListener('input', (e) => {
+        renderSearchList("ALL", e.target.value.trim().toUpperCase());
+      });
+
+      function renderSearchList(cat, q) {
+        const box = document.getElementById('search-results-list');
+        box.innerHTML = "";
+        SYMBOL_UNIVERSE.filter(s => (!q || s.symbol.includes(q) || s.name.toUpperCase().includes(q))).forEach(s => {
+          const row = document.createElement('div');
+          row.className = "wl-row";
+          row.onclick = () => selectSymbol(s.symbol);
+          row.innerHTML = `<div><strong>${s.symbol}</strong> <span style="font-size:10px; color:var(--text-muted);">${s.name}</span></div><span class="ind-pill" style="font-size:9.5px;">${s.exchange}</span>`;
+          box.appendChild(row);
+        });
+      }
+
+      // Chart Screenshot PNG export
+      document.getElementById('btn-chart-screenshot').addEventListener('click', () => {
+        if (!chartCtrl.chart) return;
+        const cv = chartCtrl.chart.takeScreenshot();
+        const a = document.createElement('a');
+        a.download = `ZenithPulse_${USER_STATE.activeSymbol}.png`;
+        a.href = cv.toDataURL('image/png');
+        a.click();
+        showToast("Chart PNG exported.");
+      });
+
+      // Calculator inputs
+      ['calc-cap', 'calc-risk', 'calc-entry', 'calc-stop'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => ProModules.calcPosition());
+      });
+
+      // Backtest button
+      document.getElementById('btn-run-bt').addEventListener('click', () => ProModules.runBacktest());
+      document.getElementById('btn-export-bt-csv').addEventListener('click', () => {
+        if (!ProModules.lastTrades) { showToast("Run backtest first."); return; }
+        let csv = "Entry,Exit,EntryPrice,ExitPrice,PnL,ReturnPct\n";
+        ProModules.lastTrades.forEach(t => csv += `${t.entryT},${t.exitT},${t.entryP},${t.exitP},${t.pnl},${t.pct.toFixed(2)}%\n`);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = `Backtest_${USER_STATE.activeSymbol}.csv`; a.click();
+        showToast("CSV exported.");
+      });
+
+      // Journal modal & save
+      document.getElementById('btn-open-jn-modal').addEventListener('click', () => {
+        document.getElementById('jn-sym').value = USER_STATE.activeSymbol;
+        document.getElementById('jn-tf').value = USER_STATE.activeTimeframe;
+        document.getElementById('modal-add-journal').classList.add('active');
+      });
+      document.getElementById('btn-save-jn').addEventListener('click', () => {
+        const entry = {
+          date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+          symbol: document.getElementById('jn-sym').value,
+          tf: document.getElementById('jn-tf').value,
+          setup: document.getElementById('jn-setup').value || "Setup",
+          reason: document.getElementById('jn-reason').value || "Technical Confluence",
+          outcome: document.getElementById('jn-outcome').value || "Under Observation"
+        };
+        USER_STATE.journal.unshift(entry);
+        localStorage.setItem('zenith_jn', JSON.stringify(USER_STATE.journal));
+        ProModules.renderJournal();
+        document.getElementById('modal-add-journal').classList.remove('active');
+        showToast("Study note saved in local storage.");
+      });
+
+      // Compliance dropdown switch
+      document.getElementById('cfg-mode-select').addEventListener('change', (e) => {
+        setComplianceMode(e.target.value);
+        showToast(`Compliance Mode: ${e.target.value}`);
+      });
+
+      // DPDP Data Purge
+      const wipe = () => {
+        if (confirm("Erase all locally stored watchlists, journals, and analytical preferences under the DPDP Act 2023?")) {
+          localStorage.clear();
+          USER_STATE.journal = [];
+          showToast("Local data erased.");
+          location.reload();
+        }
+      };
+      document.getElementById('btn-dpdp-wipe').addEventListener('click', wipe);
+      document.getElementById('btn-purge-settings').addEventListener('click', wipe);
+
+      // Footer routing to legal
+      const toLegal = () => {
+        document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-view="legal-view"]').classList.add('active');
+        document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+        document.getElementById('legal-view').classList.add('active');
+      };
+      document.getElementById('link-legal').addEventListener('click', toLegal);
+      document.getElementById('link-dpdp').addEventListener('click', toLegal);
+      document.getElementById('link-grievance').addEventListener('click', toLegal);
+      document.getElementById('header-compliance-pill').addEventListener('click', toLegal);
+
+      // Screener Filters
+      ['sc-asset', 'sc-rsi', 'sc-trend'].forEach(id => {
+        document.getElementById(id).addEventListener('change', () => ProModules.renderScreener());
+      });
+
+      // Live tick simulator (every 3 seconds)
+      setInterval(() => {
+        if (!chartCtrl || !chartCtrl.currentData || chartCtrl.currentData.length === 0) return;
+        const last = chartCtrl.currentData[chartCtrl.currentData.length - 1];
+        const drift = (Math.random() - 0.49) * (last.close * 0.001);
+        const newC = parseFloat((last.close + drift).toFixed(2));
+        last.close = newC;
+        last.high = Math.max(last.high, newC);
+        last.low = Math.min(last.low, newC);
+        try {
+          chartCtrl.csSeries.update(last);
+          document.getElementById('current-price-val').innerText = `₹${newC.toFixed(2)}`;
+        } catch (e) {}
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
