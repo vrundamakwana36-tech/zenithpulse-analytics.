@@ -1,5 +1,5 @@
-# ZenithPulse Analytics™ 📈
-### Institutional-Grade Technical Analysis & Market Research Platform
+# ZenithPulse Analytics™ 📈⚡
+### Institutional-Grade Technical Analysis & Interactive Trading Terminal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Compliance: SEBI Aligned](https://img.shields.io/badge/Compliance-SEBI%20Compliant-green.svg)](https://sebi.gov.in)
@@ -10,11 +10,35 @@
 
 ---
 
-## 🌟 Overview
+## 🌟 What's New in this Version
 
-**ZenithPulse Analytics™** is a institutional-grade, single-page algorithmic technical analysis web application built using HTML5, CSS3, and vanilla JavaScript without any external build tools or bundlers. 
+1. **One-Line Quick Market Rail (Side/Top Quick Switcher)**:
+   - Category filters: `[🔥 All] [🇮🇳 Indian Stocks] [📊 Indices] [🛢️ Commodities] [💱 Forex] [🪙 Crypto]`.
+   - Continuous one-line scrolling ticker rail with live prices and % change chips. Switch any market with a single click.
 
-It provides retail and institutional market researchers with real-time candlestick pattern recognition, multi-timeframe synchronization, strategy backtesting, and quantitative risk calculators, while strictly adhering to **SEBI (Securities and Exchange Board of India)** regulations and India's **Digital Personal Data Protection (DPDP) Act 2023**.
+2. **Expanded Multi-Asset Universe & Commodities**:
+   - **MCX Commodities**: **NATURAL GAS** (`NATURALGAS`), **CRUDE OIL** (`CRUDEOIL`), **GOLD 10g** (`GOLD`), **SILVER 1kg** (`SILVER`), **COPPER** (`COPPER`).
+   - **Indian Equities (NSE)**: RELIANCE, TCS, INFY, HDFCBANK, ICICIBANK, TATAMOTORS, SBIN, BAJFINANCE, ADANIENT, ITC, LT.
+   - **Indian Benchmark Indices**: NIFTY 50, BANK NIFTY, FINNIFTY, SENSEX.
+   - **Forex (FX)**: USD/INR, EUR/INR, GBP/INR, EUR/USD, GBP/USD, USD/JPY.
+   - **Cryptocurrencies**: BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, XRP/USDT.
+
+3. **Ultra-Clear High-Definition Charting View**:
+   - Fullscreen mode toggle (`[ ⛶ ]`) for edge-to-edge monitor analysis.
+   - Candlestick / Line / Mountain Area switcher.
+   - Interactive Zoom In (`+`), Zoom Out (`-`), and Reset Scale (`⟲`).
+   - Multi-indicator overlays: EMA 9, 21, 50, 200, Bollinger Bands, Supertrend, VWAP, Auto S/R, RSI (14), MACD.
+
+4. **Direct Interactive Trading on Website**:
+   - **🎮 Simulated Paper Trading Engine**:
+     - Starting balance: **₹10,00,000.00** virtual capital.
+     - Buy (Long) / Sell (Short) order ticket with Market/Limit, Stop-Loss (₹), Target (₹), and auto Risk:Reward calculator.
+     - Real-time Unrealized P&L updates as simulated prices tick every 3 seconds!
+     - 1-Click "Close Position" button to lock in realized profits/losses into account capital.
+     - Completed trade log with historical return % and net P&L.
+     - Web Audio API execution chimes on orders.
+   - **🚀 1-Click Live Broker Execution Gateway**:
+     - Direct pre-filled order pad launchers for **Zerodha Kite**, **Angel One**, **Upstox Pro**, **Dhan Web**, and **Groww**.
 
 ---
 
@@ -29,7 +53,7 @@ let COMPLIANCE_MODE = "EDUCATIONAL"; // Options: "EDUCATIONAL" (Default) | "SEBI
 ### 1. `EDUCATIONAL` Mode (Default)
 - **Header Badge**: `[EDUCATIONAL MODE] Non-Advisory Research Platform`
 - **Signal Markers**: Labeled strictly as **"Bullish Setup"** / **"Bearish Setup"** (Never "BUY" or "SELL").
-- **Statutory Footnote**: Clearly discloses that all tools are for educational/informational purposes and the platform is not registered as an Investment Adviser or Research Analyst with SEBI.
+- **Statutory Footnote**: Discloses that all tools and simulated paper trading are for educational/informational purposes and the platform is not registered as an Investment Adviser or Research Analyst with SEBI.
 - **Signal Strength Panel**: Multi-segment visual meter (-10 to +10) with indicator checklist. Strictly does **not** show any "confidence %" or "accuracy %" that implies certainty or guaranteed returns.
 - **Illustrative Technical Levels**: Labeled *"Illustrative technical levels, not a recommendation. For educational chart reading only."*
 
@@ -43,78 +67,30 @@ let COMPLIANCE_MODE = "EDUCATIONAL"; // Options: "EDUCATIONAL" (Default) | "SEBI
 
 ---
 
-## 📊 Core Features
-
-1. **Interactive Candlestick Chart**:
-   - Powered by **TradingView Lightweight Charts v4.1.1** via CDN.
-   - Smooth pan, zoom, crosshair tracking, and timeframes: `1m`, `5m`, `15m`, `1h`, `4h`, `1D`, `1W`.
-2. **Multi-Asset Symbol Universe**:
-   - **NSE / BSE Equities**: RELIANCE, TCS, INFY, HDFCBANK, TATAMOTORS, SBIN, ITC, LT.
-   - **Indian Indices**: NIFTY 50, BANK NIFTY, FIN NIFTY, SENSEX.
-   - **Cryptocurrencies**: BTC/USDT, ETH/USDT, SOL/USDT.
-   - **Forex**: USD/INR, EUR/USD, GBP/INR.
-   - Public feeds & synthetic tick generator without scraping exchange websites.
-3. **Candlestick Pattern Recognition Engine**:
-   - Automated mathematical detection for **Doji, Hammer, Shooting Star, Bullish Engulfing, Bearish Engulfing, Morning Star, Evening Star, Three White Soldiers, and Three Black Crows**.
-4. **Technical Indicators**:
-   - Exponential Moving Averages (EMA 9, 21, 50, 200)
-   - Wilder's Relative Strength Index (RSI 14) with 30/70 boundary zones
-   - MACD (12, 26, 9) with momentum histogram
-   - Bollinger Bands (20, 2)
-   - Supertrend (10, 3.0) ATR-based trailing trend stops
-   - Session Volume Weighted Average Price (VWAP)
-   - Auto-detected Support & Resistance horizontal price lines ($R_2, R_1, \text{Pivot}, S_1, S_2$)
-
----
-
-## ⚡ Institutional Pro Suite
-
-- **Multi-Timeframe Analysis**: Tri-chart matrix (1D Macro, 1H Intermediate, 15m Micro) for cross-timeframe alignment.
-- **Strategy Backtesting Engine**:
-  - Quantitative models: EMA 9/21 Trend, Supertrend Following, RSI Reversion.
-  - Metrics: Win Rate %, Hypothetical P/L (₹ and %), Max Drawdown %, Profit Factor.
-  - Interactive Canvas Equity Curve and CSV trade log export.
-  - **Statutory Notice**: *"Backtested and past performance is hypothetical, does not reflect real trading, and is not indicative of future results. Assumptions: Zero slippage, zero brokerage."*
-- **Mathematical Position Size Calculator**: Computes risk amount, risk per share, permissible quantity, and exposure without financial advice.
-- **Technical Market Screener**: Live filtering of 14+ assets across asset classes.
-- **Trade Study Journal**: 100% private client-side study log with CSV export.
-- **High-Res PNG Export**: Instant chart capture via native canvas renderer.
-
----
-
-## 🔒 India DPDP Act 2023 & SEBI Compliance
+## 🔒 India DPDP Act 2023 & Privacy Controls
 
 - **Zero Data Harvesting**: No collection of user broker portfolio holdings, bank accounts, or financial credentials.
-- **Client-Side Privacy**: Watchlists, journals, and theme settings remain 100% in local browser storage (`localStorage`).
+- **Client-Side Privacy**: Watchlists, journals, and simulated trading accounts remain 100% in local browser storage (`localStorage`).
 - **Right to Erasure**: Includes an instant "Erase All Local Data" button under Section 12 of the DPDP Act.
-- **Grievance Redressal**: Includes Designated Compliance Officer details, Bandra Kurla Complex (BKC) Mumbai registered address, 48-hour acknowledgment SLA, and direct links to the official **SEBI SCORES** portal (`scores.sebi.gov.in`).
+- **Grievance Redressal**: Includes Designated Compliance Officer details, Bandra Kurla Complex (BKC) Mumbai registered address, and direct links to the official **SEBI SCORES** portal (`scores.sebi.gov.in`).
 
 ---
 
-## 🚀 How to Run Locally
+## 🔄 How to Update Your Live GitHub Website
 
-Since this is a zero-dependency single-page application, no Node.js or build tools are required:
+To make these new changes live on your GitHub Pages website:
 
-1. **Direct Browser**:
-   Double click [`index.html`](./index.html) or open:
-   ```text
-   file:///path/to/index.html
-   ```
-
-2. **PowerShell**:
-   ```powershell
-   Start-Process "index.html"
-   ```
-
-3. **Live Server / Python HTTP**:
-   ```bash
-   python -m http.server 8080
-   ```
+1. Open your repository on GitHub in your web browser:
+   `https://github.com/<your-username>/<your-repo-name>`
+2. Click **Add file** ➔ **Upload files**.
+3. Drag and drop the updated [`index.html`](./index.html) and [`README.md`](./README.md) from `c:\vrunda\trading\`.
+4. Click **Commit changes**.
+5. Within 1–2 minutes, GitHub Pages will automatically refresh and your live site will feature the new clear charts, commodities, one-line market rail, and interactive trading terminal!
 
 ---
 
 ## 💳 Pro Software Subscriptions & Contact
-To activate **ZenithPulse Pro™** software tools or inquire about institutional licensing:
+To activate **ZenithPulse Pro™** software tools:
 * **Monthly Access**: ₹199 / month
 * **Annual Pro (Best Value)**: ₹1,499 / year *(equivalent to ₹125/month)*
 * **Lifetime License**: ₹3,499 one-time
