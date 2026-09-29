@@ -113,5 +113,14 @@ Since this is a zero-dependency single-page application, no Node.js or build too
 
 ---
 
+## 💳 Pro Software Subscriptions & Contact
+To activate **ZenithPulse Pro™** software tools or inquire about institutional licensing:
+* **WhatsApp / Phone Support**: [+91 9769179580](https://wa.me/919769179580)
+* **Direct UPI ID**: `9769179580@upi`
+* **Email**: `compliance@zenithpulse.example`
+* **Compliance Officer**: Vrunda Mehta (Head of Regulatory Compliance)
+
+---
+
 ## 📜 License
 Distributed under the MIT License. Copyright © 2026 Zenith Capital Research & Analytics LLP.
