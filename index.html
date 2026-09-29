@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZenithPulse Analytics&trade; | Institutional Technical Analysis &amp; Trading Terminal</title>
-  <meta name="description" content="ZenithPulse Analytics&trade; provides institutional-grade candlestick charts, multi-asset technical setups, commodities, forex, crypto, and built-in interactive paper trading terminal.">
+  <title>ZenithPulse Analytics&trade; | Institutional Technical Analysis &amp; Big Screen Trading Terminal</title>
+  <meta name="description" content="ZenithPulse Analytics&trade; provides institutional-grade big screen candlestick charts, left-side drawer screener and trade journal, 45+ Indian bluechip shares, MCX commodities, forex, crypto, and built-in interactive paper trading terminal.">
   
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,6 +95,7 @@
       grid-template-rows: var(--topbar-height) var(--rail-height) 1fr auto;
       grid-template-columns: var(--sidebar-width) 1fr var(--right-panel-width);
       width: 100vw; height: 100vh; overflow: hidden;
+      position: relative;
     }
     #app.right-dock-collapsed { grid-template-columns: var(--sidebar-width) 1fr 0px; }
 
@@ -176,7 +177,7 @@
     .pro-badge-btn.pro-active { background: linear-gradient(135deg, #10b981, #059669); }
 
     /* =========================================================================
-       NEW: ONE-LINE QUICK MARKET RAIL (SIDE/TOP QUICK DOCK)
+       ONE-LINE QUICK MARKET RAIL (TOP HORIZONTAL TICKER BAR)
        ========================================================================= */
     #quick-market-rail {
       grid-column: 1 / -1; grid-row: 2;
@@ -212,29 +213,71 @@
     .rail-ticker-chip .price-txt { font-family: var(--font-mono); color: var(--text-secondary); font-size: 10.5px; }
     .rail-ticker-chip .chg-txt { font-family: var(--font-mono); font-size: 9.5px; font-weight: 600; }
 
-    /* Left Sidebar */
+    /* Left Sidebar Icons */
     nav#sidebar {
       grid-column: 1; grid-row: 3; background: var(--bg-secondary); border-right: 1px solid var(--border-color);
       display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 4px; z-index: 40;
     }
     .nav-item {
-      width: 44px; height: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 44px; height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 2px; color: var(--text-secondary); border-radius: var(--radius-sm); cursor: pointer;
       background: transparent; border: none; position: relative;
     }
     .nav-item:hover { color: var(--text-primary); background: var(--bg-hover); }
     .nav-item.active { color: #fff; background: var(--accent-blue); }
     .nav-item svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .nav-item .nav-label { font-size: 8px; font-weight: 600; }
+    .nav-item .nav-label { font-size: 8px; font-weight: 600; text-align: center; }
     .nav-item .pro-tag-mini { position: absolute; top: 2px; right: 2px; background: var(--accent-gold); color: #000; font-size: 7px; font-weight: 800; padding: 0 2px; border-radius: 2px; }
     .sidebar-spacer { flex: 1; }
 
-    /* Main Viewport */
-    main#viewport { grid-column: 2; grid-row: 3; position: relative; background: var(--bg-primary); overflow: hidden; display: flex; flex-direction: column; }
-    .view-container { display: none; width: 100%; height: 100%; overflow: hidden; }
-    .view-container.active { display: flex; flex-direction: column; }
+    /* =========================================================================
+       NEW: SLIDE-OUT LEFT TOOL DRAWER (SCREENER, JOURNAL, CALC, BACKTEST)
+       KEEPS BIG CHART PERMANENTLY VISIBLE IN MAIN PAGE!
+       ========================================================================= */
+    #left-side-drawer {
+      position: absolute;
+      top: calc(var(--topbar-height) + var(--rail-height));
+      left: var(--sidebar-width);
+      bottom: var(--footer-height);
+      width: 530px;
+      max-width: calc(100vw - var(--sidebar-width) - 20px);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      box-shadow: 16px 0 40px rgba(0, 0, 0, 0.7);
+      z-index: 48;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(-110%);
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    #left-side-drawer.open {
+      transform: translateX(0);
+    }
+    .drawer-header {
+      height: 38px; background: var(--bg-card); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 12px; flex-shrink: 0;
+    }
+    .drawer-title { font-size: 12px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+    .drawer-close-btn {
+      background: var(--bg-hover); border: 1px solid var(--border-color); color: var(--text-secondary);
+      font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: var(--radius-sm); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .drawer-close-btn:hover { background: var(--bearish-glow); color: var(--bearish); border-color: var(--bearish); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; }
 
-    /* Chart View Stage */
+    .drawer-tool-pane { display: none; flex-direction: column; gap: 12px; height: 100%; }
+    .drawer-tool-pane.active { display: flex; }
+
+    /* Main Viewport: Dedicated to BIG SCREEN CANDLESTICK CHART */
+    main#viewport {
+      grid-column: 2; grid-row: 3; position: relative; background: var(--bg-primary);
+      overflow: hidden; display: flex; flex-direction: column; width: 100%; height: 100%;
+    }
+    .view-container { display: flex; flex-direction: column; width: 100%; height: 100%; overflow: hidden; }
+
+    /* Big Chart Stage */
     #chart-view { height: 100%; display: flex; flex-direction: column; position: relative; overflow: hidden; }
     .leveraged-risk-banner {
       background: rgba(242, 54, 69, 0.12); border-bottom: 1px solid rgba(242, 54, 69, 0.25);
@@ -263,7 +306,7 @@
     .chart-watermark .wm-sub { font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
 
     .sub-indicators-rack { display: flex; flex-direction: column; border-top: 1px solid var(--border-color); background: var(--bg-secondary); flex-shrink: 0; }
-    .sub-indicator-pane { height: 90px; width: 100%; border-bottom: 1px solid var(--border-subtle); position: relative; }
+    .sub-indicator-pane { height: 85px; width: 100%; border-bottom: 1px solid var(--border-subtle); position: relative; }
     .pane-title-badge {
       position: absolute; top: 3px; left: 8px; z-index: 10; background: rgba(19, 23, 34, 0.85);
       padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border-color); font-size: 9px;
@@ -271,9 +314,7 @@
     }
     .pane-title-badge .val { color: var(--text-primary); }
 
-    /* =========================================================================
-       NEW: INTERACTIVE TRADING TERMINAL (PAPER & LIVE BROKER DOCK)
-       ========================================================================= */
+    /* Interactive Trading Terminal (Bottom of Big Chart) */
     #trading-terminal-dock {
       background: var(--bg-secondary); border-top: 1px solid var(--border-color);
       display: flex; flex-direction: column; flex-shrink: 0; transition: height 0.2s ease;
@@ -304,7 +345,6 @@
       flex: 1; display: flex; overflow: hidden; padding: 8px 10px; gap: 10px;
     }
 
-    /* Terminal Tab 1: Paper Trading Order Ticket + Positions */
     .order-ticket-col {
       width: 270px; background: var(--bg-card); border: 1px solid var(--border-color);
       border-radius: var(--radius-sm); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; flex-shrink: 0;
@@ -349,7 +389,6 @@
     .pos-table td { padding: 5px 8px; border-bottom: 1px solid var(--border-subtle); font-family: var(--font-mono); }
     .pos-table tr:hover td { background: var(--bg-hover); }
 
-    /* Broker Gateway Card */
     .broker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; width: 100%; }
     .broker-card {
       background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-sm);
@@ -420,15 +459,8 @@
     .wl-row:hover { border-color: var(--accent-blue); background: var(--bg-hover); }
     .wl-sparkline { width: 60px; height: 20px; }
 
-    /* Other Views (MTF, Screener, Backtest, Calc, Journal, Legal, Settings) */
-    .view-scroll { height: 100%; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-    .mtf-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; flex: 1; padding: 6px; height: 100%; }
-    .mtf-box { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-    .mtf-header { padding: 5px 10px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; }
-    .mtf-chart { flex: 1; width: 100%; height: 100%; }
-
     .screener-table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
-    .screener-table th { background: var(--bg-card); padding: 7px 8px; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border-color); }
+    .screener-table th { background: var(--bg-card); padding: 7px 8px; color: var(--text-secondary); font-weight: 600; border-bottom: 1px solid var(--border-color); position: sticky; top: 0; }
     .screener-table td { padding: 7px 8px; border-bottom: 1px solid var(--border-subtle); }
     .screener-table tr:hover td { background: var(--bg-hover); cursor: pointer; }
 
@@ -482,7 +514,7 @@
 
     @media (max-width: 1024px) {
       #app { grid-template-columns: var(--sidebar-width) 1fr 0px; }
-      .mtf-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
+      #left-side-drawer { width: calc(100vw - var(--sidebar-width)); }
     }
     @media (max-width: 768px) {
       .timeframe-group, .indicator-toggle-group { display: none; }
@@ -507,15 +539,15 @@
       </div>
 
       <div class="market-controls">
-        <button id="btn-open-search" class="symbol-picker-btn" title="Search All Markets (Stocks, Indices, Commodities, FX, Crypto)">
+        <button id="btn-open-search" class="symbol-picker-btn" title="Search 55+ Markets (Stocks, Indices, Commodities, FX, Crypto)">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <span id="current-symbol-display">NATURALGAS</span>
-          <span id="current-exchange-display" class="sym-exchange">MCX</span>
+          <span id="current-symbol-display">RELIANCE</span>
+          <span id="current-exchange-display" class="sym-exchange">NSE</span>
         </button>
 
         <div class="price-badge-group">
-          <span id="current-price-val" class="live-price">₹228.40</span>
-          <span id="current-change-val" class="live-change color-bullish bg-bullish-subtle">+2.35% (+₹5.25)</span>
+          <span id="current-price-val" class="live-price">₹2,940.40</span>
+          <span id="current-change-val" class="live-change color-bullish bg-bullish-subtle">+1.24% (+₹36.00)</span>
         </div>
 
         <div class="timeframe-group" id="tf-group">
@@ -561,13 +593,13 @@
       </div>
     </header>
 
-    <!-- 2. ONE-LINE QUICK MARKET RAIL (ALL TRADES OPTION IN ONE LINE SIDE/TOP) -->
+    <!-- 2. ONE-LINE QUICK MARKET RAIL (ALL TRADES IN ONE LINE) -->
     <div id="quick-market-rail">
       <div class="rail-category-tabs">
         <button class="rail-cat-btn active" data-rail-cat="ALL">🔥 All</button>
-        <button class="rail-cat-btn" data-rail-cat="NSE">🇮🇳 Indian Stocks</button>
-        <button class="rail-cat-btn" data-rail-cat="INDICES">📊 Indices</button>
+        <button class="rail-cat-btn" data-rail-cat="NSE">🇮🇳 Indian Shares</button>
         <button class="rail-cat-btn" data-rail-cat="COMMODITIES">🛢️ Commodities</button>
+        <button class="rail-cat-btn" data-rail-cat="INDICES">📊 Indices</button>
         <button class="rail-cat-btn" data-rail-cat="FOREX">💱 Forex</button>
         <button class="rail-cat-btn" data-rail-cat="CRYPTO">🪙 Crypto</button>
       </div>
@@ -576,49 +608,231 @@
       </div>
     </div>
 
-    <!-- 3. LEFT SIDEBAR -->
+    <!-- 3. LEFT SIDEBAR ICONS -->
     <nav id="sidebar">
-      <button class="nav-item active" data-view="chart-view" title="Candlestick Chart &amp; Signal Setups">
+      <button class="nav-item active" data-action="chart" title="Big Screen Candlestick Chart">
         <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-        <span class="nav-label">Charts</span>
+        <span class="nav-label">Chart</span>
       </button>
-      <button class="nav-item" data-view="mtf-view" title="Multi-Timeframe Analysis (Pro)">
+      <button class="nav-item" data-drawer="screener" title="Automated Technical Market Screener (Slide-out)">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <span class="nav-label">Screener</span>
+      </button>
+      <button class="nav-item" data-drawer="journal" title="Trade Observation &amp; Study Journal (Slide-out)">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        <span class="nav-label">Journal</span>
+      </button>
+      <button class="nav-item" data-drawer="mtf" title="Multi-Timeframe Analysis Matrix">
         <span class="pro-tag-mini">PRO</span>
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         <span class="nav-label">Multi-TF</span>
       </button>
-      <button class="nav-item" data-view="screener-view" title="Market Screener">
-        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <span class="nav-label">Screener</span>
-      </button>
-      <button class="nav-item" data-view="backtest-view" title="Strategy Backtester (Pro)">
+      <button class="nav-item" data-drawer="backtest" title="Strategy Backtester">
         <span class="pro-tag-mini">PRO</span>
         <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
         <span class="nav-label">Backtest</span>
       </button>
-      <button class="nav-item" data-view="calculator-view" title="Position Size Calculator">
+      <button class="nav-item" data-drawer="calculator" title="Position Size Calculator">
         <svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"></rect><line x1="8" y1="6" x2="16" y2="6"></line><line x1="16" y1="14" x2="16" y2="18"></line></svg>
         <span class="nav-label">Calc</span>
       </button>
-      <button class="nav-item" data-view="journal-view" title="Trade Study Journal">
-        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-        <span class="nav-label">Journal</span>
-      </button>
       <div class="sidebar-spacer"></div>
-      <button class="nav-item" data-view="legal-view" title="SEBI Disclaimers &amp; DPDP Legal Center">
+      <button class="nav-item" data-drawer="legal" title="SEBI Disclaimers &amp; DPDP Legal Center">
         <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
         <span class="nav-label">Legal</span>
       </button>
-      <button class="nav-item" data-view="settings-view" title="Settings &amp; Compliance Mode Switch">
+      <button class="nav-item" data-drawer="settings" title="Settings &amp; Compliance Mode">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         <span class="nav-label">Settings</span>
       </button>
     </nav>
 
-    <!-- 4. MAIN VIEWPORT -->
+    <!-- 4. SLIDE-OUT LEFT TOOL DRAWER (CAN BE CLOSED, BIG CHART STAYS VISIBLE) -->
+    <div id="left-side-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title" id="drawer-title-text">
+          <span>📊</span> Automated Technical Market Screener
+        </div>
+        <button id="btn-close-left-drawer" class="drawer-close-btn" title="Close Panel (ESC)">
+          <span>✕</span> Close Panel
+        </button>
+      </div>
+
+      <div class="drawer-body">
+        <!-- PANE: SCREENER -->
+        <div id="drawer-pane-screener" class="drawer-tool-pane">
+          <div class="card-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div>
+                <h3 style="font-size: 13px; font-weight: 700;">Live Market Screener (55+ Assets)</h3>
+                <p style="font-size: 10px; color: var(--text-secondary);">Click any stock row to instantly load it onto the Big Screen Chart.</p>
+              </div>
+              <button id="btn-export-screener-csv" class="ind-pill" style="font-size: 9.5px;">Export CSV</button>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <select id="sc-asset" class="form-input" style="flex: 1; min-width: 130px;">
+                <option value="ALL">All Assets (55+)</option>
+                <option value="NSE" selected>NSE Shares (45+)</option>
+                <option value="COMMODITIES">MCX Commodities</option>
+                <option value="INDICES">Indices</option>
+                <option value="FOREX">Forex</option>
+                <option value="CRYPTO">Crypto</option>
+              </select>
+              <select id="sc-rsi" class="form-input">
+                <option value="ALL">Any RSI</option>
+                <option value="OVERSOLD">RSI &lt; 35 (Oversold)</option>
+                <option value="OVERBOUGHT">RSI &gt; 65 (Overbought)</option>
+              </select>
+              <select id="sc-trend" class="form-input">
+                <option value="ALL">Any Trend</option>
+                <option value="ST_GREEN">Supertrend Green</option>
+                <option value="ST_RED">Supertrend Red</option>
+                <option value="ABOVE_EMA200">Price &gt; 200 EMA</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card-panel" style="padding: 0; overflow-x: auto; flex: 1;">
+            <table class="screener-table">
+              <thead>
+                <tr>
+                  <th>Symbol</th><th>Class</th><th>Price</th><th>24h Chg</th><th>RSI (14)</th><th>Supertrend</th><th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="screener-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE: TRADE JOURNAL -->
+        <div id="drawer-pane-journal" class="drawer-tool-pane">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h3 style="font-size: 13px; font-weight: 700;">Trade Observation &amp; Study Journal</h3>
+              <p style="font-size: 10px; color: var(--text-secondary);">Log technical observations and reflections in your browser's private local cache.</p>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button id="btn-export-jn-csv" class="ind-pill" style="font-size: 9.5px;">Export CSV</button>
+              <button id="btn-open-jn-modal" class="pro-badge-btn" style="background: var(--bullish); font-size: 10px; padding: 3px 8px;">+ New Note</button>
+            </div>
+          </div>
+          <div class="card-panel" style="padding: 0; overflow-x: auto; flex: 1;">
+            <table class="screener-table">
+              <thead><tr><th>Date</th><th>Symbol</th><th>TF</th><th>Setup Observed</th><th>Outcome</th><th>Action</th></tr></thead>
+              <tbody id="journal-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE: MULTI-TIMEFRAME (PRO) -->
+        <div id="drawer-pane-mtf" class="drawer-tool-pane">
+          <div style="padding: 6px; background: var(--bg-card); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 11px;">
+            <strong>Multi-Timeframe Alignment:</strong> Tri-timeframe confluence for <span id="mtf-sym-title" style="color:var(--accent-blue); font-weight:700;">RELIANCE</span>.
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+            <div class="card-panel" style="height: 160px; padding: 4px; display:flex; flex-direction:column;">
+              <div style="font-size: 10px; font-weight: 700; color: var(--bullish);">1D Macro Trend</div>
+              <div id="mtf-chart-1d" style="flex:1; width:100%;"></div>
+            </div>
+            <div class="card-panel" style="height: 160px; padding: 4px; display:flex; flex-direction:column;">
+              <div style="font-size: 10px; font-weight: 700; color: var(--accent-gold);">1H Intermediate Swing</div>
+              <div id="mtf-chart-1h" style="flex:1; width:100%;"></div>
+            </div>
+            <div class="card-panel" style="height: 160px; padding: 4px; display:flex; flex-direction:column;">
+              <div style="font-size: 10px; font-weight: 700; color: var(--bearish);">15m Micro Timing</div>
+              <div id="mtf-chart-15m" style="flex:1; width:100%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE: BACKTESTER (PRO) -->
+        <div id="drawer-pane-backtest" class="drawer-tool-pane">
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <div class="form-group"><label>Symbol</label><select id="bt-sym" class="form-input"></select></div>
+              <div class="form-group"><label>Initial Capital (₹)</label><input type="number" id="bt-cap" class="form-input" value="100000"></div>
+            </div>
+            <div class="form-group"><label>Quantitative Model</label><select id="bt-strat" class="form-input"><option value="EMA_CROSS">EMA 9/21 Crossover + 200 EMA Filter</option><option value="SUPERTREND">Supertrend (10, 3) Trend Following</option><option value="RSI_BB">RSI Oversold + Lower BB Reversion</option></select></div>
+            <button id="btn-run-bt" class="pro-badge-btn" style="justify-content: center; height: 30px;">Run Simulation</button>
+          </div>
+          <div class="metric-grid">
+            <div class="metric-card"><span class="m-title">Win Rate</span><div id="bt-wr" class="m-val color-bullish">58.4%</div></div>
+            <div class="metric-card"><span class="m-title">Net Hypothetical P/L</span><div id="bt-pnl" class="m-val color-bullish">+₹28,450</div></div>
+            <div class="metric-card"><span class="m-title">Max Drawdown</span><div id="bt-dd" class="m-val color-bearish">-7.8%</div></div>
+            <div class="metric-card"><span class="m-title">Profit Factor</span><div id="bt-pf" class="m-val">1.74</div></div>
+          </div>
+          <div class="card-panel" style="height: 150px;">
+            <canvas id="equity-curve-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- PANE: POSITION CALCULATOR -->
+        <div id="drawer-pane-calculator" class="drawer-tool-pane">
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 10px;">
+            <h3 style="font-size: 13px; font-weight: 700;">Position Size &amp; Risk Calculator</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="form-group"><label>Account Capital (₹)</label><input type="number" id="calc-cap" class="form-input" value="500000"></div>
+              <div class="form-group"><label>Risk Per Trade (%)</label><input type="number" id="calc-risk" class="form-input" value="1.0" step="0.25"></div>
+              <div class="form-group"><label>Reference Entry Price (₹)</label><input type="number" id="calc-entry" class="form-input" value="2940.40"></div>
+              <div class="form-group"><label>Reference Stop Level (₹)</label><input type="number" id="calc-stop" class="form-input" value="2895.00"></div>
+            </div>
+            <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div><span style="font-size: 9.5px; color: var(--text-secondary);">Max Permissible Loss</span><div id="res-risk-amt" style="font-size: 14px; font-weight: 800; font-family: var(--font-mono); color: var(--bearish);">₹5,000.00</div></div>
+              <div><span style="font-size: 9.5px; color: var(--text-secondary);">Risk Per Share</span><div id="res-risk-share" style="font-size: 14px; font-weight: 800; font-family: var(--font-mono);">₹45.40</div></div>
+              <div><span style="font-size: 9.5px; color: var(--text-secondary);">Calculated Sizing</span><div id="res-qty" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">110 Shares</div></div>
+              <div><span style="font-size: 9.5px; color: var(--text-secondary);">Total Exposure</span><div id="res-exposure" style="font-size: 14px; font-weight: 800; font-family: var(--font-mono);">₹3,23,444.00</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PANE: LEGAL & COMPLIANCE -->
+        <div id="drawer-pane-legal" class="drawer-tool-pane">
+          <div class="card-panel">
+            <h3 style="font-size: 12.5px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px;">SEBI Risk Disclosures</h3>
+            <p style="font-size: 10.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 6px;">
+              Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides technical analysis tools strictly for educational purposes.
+            </p>
+            <p style="font-size: 10.5px; color: var(--text-secondary); line-height: 1.5;">
+              Over 90% of individual traders in derivatives incur net financial losses. Offshore forex and crypto are not governed by SEBI.
+            </p>
+          </div>
+          <div class="card-panel">
+            <h3 style="font-size: 12.5px; font-weight: 700; color: var(--accent-blue); margin-bottom: 6px;">DPDP Act 2023 &amp; Privacy</h3>
+            <p style="font-size: 10.5px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 6px;">
+              All journals and paper trades are saved strictly in your local browser storage.
+            </p>
+            <button id="btn-dpdp-wipe" class="ind-pill" style="color: var(--bearish); border-color: rgba(242,54,69,0.4);">🗑️ Erase All Local Data</button>
+          </div>
+          <div class="card-panel" style="font-size: 10.5px; line-height: 1.5;">
+            <div><strong>Compliance Officer:</strong> Vrunda Mehta</div>
+            <div><strong>Entity:</strong> Zenith Capital Research &amp; Analytics LLP</div>
+            <div><strong>Phone / WhatsApp:</strong> +91 9769179580</div>
+          </div>
+        </div>
+
+        <!-- PANE: SETTINGS -->
+        <div id="drawer-pane-settings" class="drawer-tool-pane">
+          <div class="card-panel" style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-weight: 600; font-size: 12px;">Active Compliance Mode</div>
+            <select id="cfg-mode-select" class="form-input">
+              <option value="EDUCATIONAL">EDUCATIONAL (Default - Non-Advisory)</option>
+              <option value="SEBI_REGISTERED">SEBI_REGISTERED (Research Analyst)</option>
+            </select>
+          </div>
+          <div class="card-panel" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-weight: 600; font-size: 12px;">Reset Paper Portfolio</div>
+              <div style="font-size: 10px; color: var(--text-secondary);">Reset simulated balance to ₹10,00,000.</div>
+            </div>
+            <button id="btn-reset-virtual-acc" class="ind-pill" style="color: var(--accent-gold);">Reset Portfolio</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MAIN VIEWPORT (DEDICATED TO BIG SCREEN CANDLESTICK CHART) -->
     <main id="viewport">
-      <!-- VIEW 1: CANDLESTICK CHART & DIRECT TRADING TERMINAL -->
-      <section id="chart-view" class="view-container active">
+      <section id="chart-view" class="view-container">
         <div id="leveraged-risk-banner" class="leveraged-risk-banner">
           <div>
             <strong>⚠️ High-Risk Notice:</strong> Commodities (MCX Natural Gas, Crude, Gold), F&amp;O derivatives, offshore Forex, and Crypto involve substantial capital risk. SEBI research demonstrates that over 90% of individual traders in derivatives incur net losses.
@@ -629,8 +843,8 @@
         <!-- Chart Quick Bar -->
         <div class="chart-view-toolbar">
           <div class="chart-tool-group">
-            <span style="font-weight: 700; color: var(--text-primary); font-size: 11.5px;" id="chart-toolbar-sym">NATURALGAS (MCX)</span>
-            <span style="color: var(--text-muted); font-size: 10px;">• Candlesticks (High Precision)</span>
+            <span style="font-weight: 700; color: var(--text-primary); font-size: 11.5px;" id="chart-toolbar-sym">RELIANCE (NSE)</span>
+            <span style="color: var(--text-muted); font-size: 10px;">• Big Screen View</span>
           </div>
           <div class="chart-tool-group">
             <button class="chart-mini-btn active" id="btn-chart-style-candles" title="Candlestick View">🕯️ Candles</button>
@@ -646,8 +860,8 @@
         <div class="chart-stage">
           <div id="tv-chart-container"></div>
           <div class="chart-watermark">
-            <span class="wm-title" id="wm-symbol-text">NATURALGAS</span>
-            <span class="wm-sub">ZenithPulse Analytics&trade; • Clear View Trading Terminal</span>
+            <span class="wm-title" id="wm-symbol-text">RELIANCE</span>
+            <span class="wm-sub">ZenithPulse Analytics&trade; • Clear View Big Screen</span>
           </div>
         </div>
 
@@ -671,7 +885,7 @@
         </div>
 
         <!-- =========================================================================
-             BUILT-IN INTERACTIVE TRADING TERMINAL ("PERSON CAN TRADE IN THIS WEBSITE")
+             BUILT-IN INTERACTIVE TRADING TERMINAL (PAPER TRADING & BROKER DOCK)
              ========================================================================= -->
         <div id="trading-terminal-dock">
           <div class="terminal-header" id="terminal-header-bar">
@@ -718,13 +932,13 @@
                   </div>
                   <div>
                     <label style="font-size: 9.5px; color: var(--text-secondary);">Order Price (₹)</label>
-                    <input type="number" id="trade-price-input" class="order-input-mini" value="228.40" step="0.05">
+                    <input type="number" id="trade-price-input" class="order-input-mini" value="2940.40" step="0.05">
                   </div>
                 </div>
 
                 <div>
                   <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                    <label style="font-size: 9.5px; color: var(--text-secondary);">Quantity / Lots</label>
+                    <label style="font-size: 9.5px; color: var(--text-secondary);">Quantity / Shares</label>
                     <div class="qty-presets">
                       <span class="qty-chip" onclick="setTradeQty(1)">1</span>
                       <span class="qty-chip" onclick="setTradeQty(5)">5</span>
@@ -748,7 +962,7 @@
                 </div>
 
                 <div style="font-size: 9.5px; color: var(--text-muted); display: flex; justify-content: space-between; padding: 2px 0;">
-                  <span>Est. Margin: <strong id="trade-margin-req" style="color: var(--text-primary);">₹2,284.00</strong></span>
+                  <span>Est. Margin: <strong id="trade-margin-req" style="color: var(--text-primary);">₹5,880.80</strong></span>
                   <span>R:R: <strong id="trade-rr-ratio" style="color: var(--accent-gold);">1:2.0</strong></span>
                 </div>
 
@@ -763,9 +977,7 @@
                       <th>Symbol</th><th>Side</th><th>Qty</th><th>Entry Price</th><th>Current LTP</th><th>P&amp;L (₹)</th><th>Return %</th><th>Action</th>
                     </tr>
                   </thead>
-                  <tbody id="quick-positions-tbody">
-                    <!-- Dynamic -->
-                  </tbody>
+                  <tbody id="quick-positions-tbody"></tbody>
                 </table>
               </div>
             </div>
@@ -802,7 +1014,7 @@
               <div class="broker-grid">
                 <div class="broker-card">
                   <div class="broker-name"><span style="color: #ea580c; font-size: 14px;">●</span> Zerodha Kite</div>
-                  <div style="font-size: 10px; color: var(--text-muted);">Trade <strong id="bk-sym-kite" style="color:var(--text-primary);">NATURALGAS</strong> on Kite.</div>
+                  <div style="font-size: 10px; color: var(--text-muted);">Trade <strong id="bk-sym-kite" style="color:var(--text-primary);">RELIANCE</strong> on Kite.</div>
                   <a href="https://kite.zerodha.com" target="_blank" class="btn-broker-direct">Open Zerodha Order Pad ↗</a>
                 </div>
                 <div class="broker-card">
@@ -830,247 +1042,9 @@
           </div>
         </div>
       </section>
-
-      <!-- VIEW 2: MULTI-TIMEFRAME ANALYSIS (PRO) -->
-      <section id="mtf-view" class="view-container">
-        <div style="padding: 8px 14px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="font-size: 13px; font-weight: 700;">Multi-Timeframe Confluence Matrix (Pro)</h3>
-          <span style="font-size: 11px; color: var(--text-secondary);">Tri-Timeframe Alignment: <strong class="color-bullish">Bullish Macro / Micro Consolidation</strong></span>
-        </div>
-        <div class="mtf-grid">
-          <div class="mtf-box">
-            <div class="mtf-header"><span>1D (Daily Macro Trend)</span><span class="color-bullish">Bullish Bias</span></div>
-            <div class="mtf-chart" id="mtf-chart-1d"></div>
-          </div>
-          <div class="mtf-box">
-            <div class="mtf-header"><span>1H (Intermediate Swing)</span><span class="color-bullish">Pullback Support</span></div>
-            <div class="mtf-chart" id="mtf-chart-1h"></div>
-          </div>
-          <div class="mtf-box">
-            <div class="mtf-header"><span>15m (Micro Execution)</span><span class="color-bearish">Neutral Range</span></div>
-            <div class="mtf-chart" id="mtf-chart-15m"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 3: MARKET SCREENER -->
-      <section id="screener-view" class="view-container view-scroll">
-        <div class="card-panel">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div>
-              <h2 style="font-size: 16px; font-weight: 700;">Automated Technical Market Screener</h2>
-              <p style="font-size: 11px; color: var(--text-secondary);">Filter Indian stocks, commodities (Natural Gas, Crude, Gold), indices, forex, and crypto by technical conditions.</p>
-            </div>
-            <button id="btn-export-screener-csv" class="ind-pill">Export CSV</button>
-          </div>
-          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-            <select id="sc-asset" class="form-input">
-              <option value="ALL">All Asset Classes</option>
-              <option value="COMMODITIES">MCX Commodities</option>
-              <option value="NSE">NSE Stocks</option>
-              <option value="INDICES">Indices</option>
-              <option value="FOREX">Forex</option>
-              <option value="CRYPTO">Crypto</option>
-            </select>
-            <select id="sc-rsi" class="form-input">
-              <option value="ALL">Any RSI</option>
-              <option value="OVERSOLD">RSI &lt; 35 (Oversold)</option>
-              <option value="OVERBOUGHT">RSI &gt; 65 (Overbought)</option>
-            </select>
-            <select id="sc-trend" class="form-input">
-              <option value="ALL">Any Trend</option>
-              <option value="ST_GREEN">Supertrend Green</option>
-              <option value="ST_RED">Supertrend Red</option>
-              <option value="ABOVE_EMA200">Price &gt; 200 EMA</option>
-            </select>
-          </div>
-        </div>
-        <div class="card-panel" style="padding: 0; overflow-x: auto;">
-          <table class="screener-table">
-            <thead>
-              <tr>
-                <th>Symbol</th><th>Class</th><th>Price</th><th>24h Chg</th><th>RSI (14)</th><th>MACD</th><th>200 EMA</th><th>Supertrend</th><th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="screener-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- VIEW 4: STRATEGY BACKTESTER (PRO) -->
-      <section id="backtest-view" class="view-container view-scroll">
-        <div class="card-panel" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto; gap: 10px; align-items: flex-end;">
-          <div class="form-group">
-            <label>Symbol</label>
-            <select id="bt-sym" class="form-input">
-              <option value="NATURALGAS">NATURALGAS (MCX)</option>
-              <option value="CRUDEOIL">CRUDEOIL (MCX)</option>
-              <option value="GOLD">GOLD (MCX)</option>
-              <option value="RELIANCE">RELIANCE (NSE)</option>
-              <option value="NIFTY 50">NIFTY 50 (Index)</option>
-              <option value="BTC/USDT">BTC/USDT (Crypto)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Quantitative Strategy</label>
-            <select id="bt-strat" class="form-input">
-              <option value="EMA_CROSS">EMA 9/21 Crossover + 200 EMA Trend Filter</option>
-              <option value="SUPERTREND">Supertrend (10, 3) Trend Following</option>
-              <option value="RSI_BB">RSI Oversold + Lower BB Reversion</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Initial Capital (₹)</label>
-            <input type="number" id="bt-cap" class="form-input" value="100000">
-          </div>
-          <div class="form-group">
-            <label>Window</label>
-            <select id="bt-period" class="form-input"><option value="90">Past 90 Days</option><option value="180">Past 180 Days</option><option value="365" selected>Past 1 Year (365D)</option></select>
-          </div>
-          <button id="btn-run-bt" class="pro-badge-btn" style="height: 32px; padding: 0 14px; font-size: 12px;">Run Simulation</button>
-        </div>
-
-        <div class="il-warning-notice">
-          <strong>Mandatory Risk &amp; Methodology Notice:</strong> Backtested and past performance is hypothetical, does not reflect real trading, and is not indicative of future results. Assumptions: Zero slippage, zero brokerage commissions, executions strictly at candle close.
-        </div>
-
-        <div class="metric-grid">
-          <div class="metric-card"><span class="m-title">Win Rate</span><div id="bt-wr" class="m-val color-bullish">58.4%</div></div>
-          <div class="metric-card"><span class="m-title">Net Hypothetical P/L</span><div id="bt-pnl" class="m-val color-bullish">+₹28,450 (+28.5%)</div></div>
-          <div class="metric-card"><span class="m-title">Max Drawdown</span><div id="bt-dd" class="m-val color-bearish">-7.8%</div></div>
-          <div class="metric-card"><span class="m-title">Profit Factor</span><div id="bt-pf" class="m-val">1.74</div></div>
-          <div class="metric-card"><span class="m-title">Total Trades</span><div id="bt-trades" class="m-val">48 (28W / 20L)</div></div>
-        </div>
-
-        <div class="card-panel">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h3 style="font-size: 12.5px; font-weight: 700;">Simulated Equity Curve (Capital Growth)</h3>
-            <button id="btn-export-bt-csv" class="ind-pill" style="font-size: 10px;">Export Trade Log (CSV)</button>
-          </div>
-          <div style="width: 100%; height: 200px;"><canvas id="equity-curve-canvas"></canvas></div>
-        </div>
-      </section>
-
-      <!-- VIEW 5: POSITION CALCULATOR -->
-      <section id="calculator-view" class="view-container view-scroll" style="align-items: center;">
-        <div class="card-panel" style="width: 100%; max-width: 620px; display: flex; flex-direction: column; gap: 14px;">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700;">Mathematical Position Size &amp; Risk Calculator</h2>
-            <p style="font-size: 11px; color: var(--text-secondary); margin-top: 2px;">
-              Pure mathematical tool based on your self-selected risk inputs. Does not provide trading advice or recommendations.
-            </p>
-          </div>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
-            <div class="form-group"><label>Account Capital (₹)</label><input type="number" id="calc-cap" class="form-input" value="500000"></div>
-            <div class="form-group"><label>Risk Per Trade (%)</label><input type="number" id="calc-risk" class="form-input" value="1.0" step="0.25"></div>
-            <div class="form-group"><label>Reference Entry Price (₹)</label><input type="number" id="calc-entry" class="form-input" value="228.40"></div>
-            <div class="form-group"><label>Reference Stop Level (₹)</label><input type="number" id="calc-stop" class="form-input" value="222.00"></div>
-          </div>
-          <div style="background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            <div><span style="font-size: 10px; color: var(--text-secondary);">Max Permissible Loss</span><div id="res-risk-amt" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono); color: var(--bearish);">₹5,000.00</div></div>
-            <div><span style="font-size: 10px; color: var(--text-secondary);">Risk Per Unit</span><div id="res-risk-share" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono);">₹6.40</div></div>
-            <div><span style="font-size: 10px; color: var(--text-secondary);">Calculated Sizing</span><div id="res-qty" style="font-size: 19px; font-weight: 800; font-family: var(--font-mono); color: var(--accent-blue);">781 Units</div></div>
-            <div><span style="font-size: 10px; color: var(--text-secondary);">Total Position Exposure</span><div id="res-exposure" style="font-size: 16px; font-weight: 800; font-family: var(--font-mono);">₹1,78,380.40</div></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 6: TRADE JOURNAL -->
-      <section id="journal-view" class="view-container view-scroll">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <h2 style="font-size: 16px; font-weight: 700;">Trade Observation &amp; Study Journal</h2>
-            <p style="font-size: 11px; color: var(--text-secondary);">Personal study log stored strictly in your browser's private local storage.</p>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <button id="btn-export-jn-csv" class="ind-pill">Export CSV</button>
-            <button id="btn-open-jn-modal" class="pro-badge-btn" style="background: var(--bullish);">+ New Study Note</button>
-          </div>
-        </div>
-        <div class="card-panel" style="padding: 0; overflow-x: auto;">
-          <table class="screener-table">
-            <thead><tr><th>Date</th><th>Symbol</th><th>TF</th><th>Observed Setup</th><th>Reason</th><th>Outcome</th><th>Action</th></tr></thead>
-            <tbody id="journal-tbody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- VIEW 7: LEGAL & COMPLIANCE CENTER -->
-      <section id="legal-view" class="view-container view-scroll" style="max-width: 860px; margin: 0 auto; width: 100%;">
-        <div class="card-panel">
-          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">1. Regulatory Compliance &amp; Risk Disclaimers</h2>
-          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
-            <strong>Statutory Securities Risk Disclosure:</strong> Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides automated algorithmic and technical analysis tools strictly for educational, informational, and mathematical study purposes.
-          </p>
-          <p id="legal-statutory-notice" style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
-            <strong>Educational Mode Status:</strong> ZenithPulse Analytics&trade; is not registered as an Investment Adviser or Research Analyst with SEBI. Nothing on this platform constitutes an investment recommendation, buy/sell call, price target, or financial advisory service.
-          </p>
-          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
-            <strong>Commodities &amp; Leveraged Products (MCX, F&amp;O, Forex, Crypto):</strong> Derivatives carry substantial capital risk. SEBI's published study reveals that 9 out of 10 individual traders in equity F&amp;O incurred net financial losses. Offshore forex and crypto trading are not regulated under SEBI.
-          </p>
-        </div>
-
-        <div class="card-panel">
-          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">2. Privacy Policy &amp; DPDP Act 2023 Compliance</h2>
-          <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
-            In alignment with India's <strong>Digital Personal Data Protection Act (DPDP Act) 2023</strong>: We do not collect or store your real broker portfolio holdings, bank credentials, or PAN. All custom watchlists, journal logs, and simulated paper trades are stored solely in your local browser cache. Under Section 12, you have the right to erase all cached data anytime.
-          </p>
-          <button id="btn-dpdp-wipe" class="ind-pill" style="color: var(--bearish); border-color: rgba(242,54,69,0.4); padding: 6px 12px;">🗑️ Erase All Local Data (DPDP Act)</button>
-        </div>
-
-        <div class="card-panel">
-          <h2 style="font-size: 15px; font-weight: 700; color: var(--accent-blue); margin-bottom: 8px;">3. Grievance Redressal &amp; Official Contact</h2>
-          <div style="font-size: 12px; line-height: 1.6; background: var(--bg-primary); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
-            <div><strong>Grievance &amp; Compliance Officer:</strong> Vrunda Mehta</div>
-            <div><strong>Designation:</strong> Head of Compliance</div>
-            <div><strong>Entity:</strong> Zenith Capital Research &amp; Analytics LLP</div>
-            <div><strong>Email:</strong> compliance@zenithpulse.example | <strong>Phone / WhatsApp:</strong> +91 9769179580</div>
-            <div><strong>Address:</strong> Level 14, Tower B, BKC Financial Center, Bandra Kurla Complex, Mumbai, Maharashtra 400051</div>
-            <div><strong>Regulatory Portals:</strong> <a href="https://scores.sebi.gov.in" target="_blank" style="color: var(--accent-blue);">scores.sebi.gov.in</a> (SEBI SCORES) | <a href="https://smartodr.in" target="_blank" style="color: var(--accent-blue);">smartodr.in</a> (SMART ODR)</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 8: SETTINGS -->
-      <section id="settings-view" class="view-container view-scroll" style="max-width: 740px; margin: 0 auto; width: 100%;">
-        <div class="card-panel" style="display: flex; flex-direction: column; gap: 12px;">
-          <h3 style="font-size: 14px; font-weight: 700;">Regulatory Mode Selection</h3>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 600;">Active Compliance Mode</div>
-              <div style="font-size: 11px; color: var(--text-secondary);">Toggle between Educational Research and SEBI Registered Intermediary Mode.</div>
-            </div>
-            <select id="cfg-mode-select" class="form-input" style="font-weight: 600;">
-              <option value="EDUCATIONAL">EDUCATIONAL (Default - No Advice)</option>
-              <option value="SEBI_REGISTERED">SEBI_REGISTERED (Research Analyst)</option>
-            </select>
-          </div>
-
-          <div id="sebi-detail-box" style="display: none; flex-direction: column; gap: 8px; background: var(--bg-primary); padding: 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
-            <div style="font-size: 11.5px; color: var(--bullish); font-weight: 700;">SEBI Registry Credentials</div>
-            <div style="font-size: 11.5px;">Type: Research Analyst | Reg No: INH000012345 | Validity: 2024 - 2029</div>
-          </div>
-        </div>
-
-        <div class="card-panel" style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-weight: 600;">Reset Virtual Trading Account</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Reset simulated balance back to ₹10,00,000 and clear active positions.</div>
-          </div>
-          <button id="btn-reset-virtual-acc" class="ind-pill" style="color: var(--accent-gold); border-color: rgba(255,183,3,0.4);">Reset ₹10 Lakhs Portfolio</button>
-        </div>
-
-        <div class="card-panel" style="display: flex; justify-content: space-between; align-items: center;">
-          <div>
-            <div style="font-weight: 600;">DPDP Local Data Storage</div>
-            <div style="font-size: 11px; color: var(--text-secondary);">Wipe all locally saved trade journals, watchlists, and theme preferences.</div>
-          </div>
-          <button id="btn-purge-settings" class="ind-pill" style="color: var(--bearish);">Purge Storage</button>
-        </div>
-      </section>
     </main>
 
-    <!-- 5. RIGHT ANALYTICS DOCK -->
+    <!-- 6. RIGHT ANALYTICS DOCK -->
     <aside id="right-dock">
       <div class="dock-tabs">
         <button class="dock-tab-btn active" data-dock="signals">Signals</button>
@@ -1122,13 +1096,13 @@
           </div>
           <table class="levels-table">
             <tbody>
-              <tr><td>Resistance 2 (Major Swing)</td><td id="lvl-r2" class="lvl-p color-bearish">₹238.50</td></tr>
-              <tr><td>Resistance 1 (Recent High)</td><td id="lvl-r1" class="lvl-p color-bearish">₹234.00</td></tr>
-              <tr style="background: rgba(41,98,255,0.06);"><td><strong>Current Reference Price</strong></td><td id="lvl-curr" class="lvl-p" style="color: var(--accent-blue);">₹228.40</td></tr>
-              <tr><td>Central Pivot Zone</td><td id="lvl-pivot" class="lvl-p">₹226.50</td></tr>
-              <tr><td>Support 1 (EMA Confluence)</td><td id="lvl-s1" class="lvl-p color-bullish">₹222.80</td></tr>
-              <tr><td>Support 2 (Structural Demand)</td><td id="lvl-s2" class="lvl-p color-bullish">₹218.00</td></tr>
-              <tr><td>ATR (14-Period Volatility)</td><td id="lvl-atr" class="lvl-p">±₹5.40 (2.36%)</td></tr>
+              <tr><td>Resistance 2 (Major Swing)</td><td id="lvl-r2" class="lvl-p color-bearish">₹3,025.00</td></tr>
+              <tr><td>Resistance 1 (Recent High)</td><td id="lvl-r1" class="lvl-p color-bearish">₹2,980.50</td></tr>
+              <tr style="background: rgba(41,98,255,0.06);"><td><strong>Current Reference Price</strong></td><td id="lvl-curr" class="lvl-p" style="color: var(--accent-blue);">₹2,940.40</td></tr>
+              <tr><td>Central Pivot Zone</td><td id="lvl-pivot" class="lvl-p">₹2,915.20</td></tr>
+              <tr><td>Support 1 (EMA Confluence)</td><td id="lvl-s1" class="lvl-p color-bullish">₹2,890.00</td></tr>
+              <tr><td>Support 2 (Structural Demand)</td><td id="lvl-s2" class="lvl-p color-bullish">₹2,845.00</td></tr>
+              <tr><td>ATR (14-Period Volatility)</td><td id="lvl-atr" class="lvl-p">±₹34.80 (1.18%)</td></tr>
             </tbody>
           </table>
         </div>
@@ -1144,7 +1118,7 @@
       </div>
     </aside>
 
-    <!-- 6. STICKY STATUTORY COMPLIANCE FOOTER -->
+    <!-- 7. STICKY STATUTORY COMPLIANCE FOOTER -->
     <footer id="statutory-footer">
       <div id="footer-disclaimer-text">
         Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides technical analysis tools and simulated paper trading for educational and informational purposes only. It is not investment advice or a research recommendation. We are not registered as an Investment Adviser or Research Analyst with SEBI.
@@ -1241,20 +1215,20 @@
 
   <!-- MODAL: SYMBOL SEARCH -->
   <div id="modal-symbol-search" class="modal-overlay">
-    <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-card" style="max-width: 540px;">
       <button class="modal-close-btn" onclick="document.getElementById('modal-symbol-search').classList.remove('active')">✕</button>
-      <input type="text" id="symbol-search-input" class="form-input" placeholder="Search All Markets (NATURALGAS, CRUDEOIL, GOLD, RELIANCE, NIFTY 50, BTC/USDT)..." style="font-size: 13px; padding: 8px 10px;">
+      <input type="text" id="symbol-search-input" class="form-input" placeholder="Search 55+ Stocks &amp; Commodities (RELIANCE, ZOMATO, TATA, GOLD, GAS, BTC)..." style="font-size: 13px; padding: 8px 10px;">
       <div style="display: flex; gap: 4px; overflow-x: auto;" id="search-tabs">
-        <button class="ind-pill active" data-tab="ALL">All</button>
+        <button class="ind-pill active" data-tab="ALL">All (55+)</button>
+        <button class="ind-pill" data-tab="NSE">NSE Shares (45+)</button>
         <button class="ind-pill" data-tab="COMMODITIES">Commodities</button>
-        <button class="ind-pill" data-tab="NSE">NSE Stocks</button>
         <button class="ind-pill" data-tab="INDICES">Indices</button>
         <button class="ind-pill" data-tab="FOREX">Forex</button>
         <button class="ind-pill" data-tab="CRYPTO">Crypto</button>
       </div>
-      <div id="search-results-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 300px; overflow-y: auto;"></div>
+      <div id="search-results-list" style="display: flex; flex-direction: column; gap: 4px; max-height: 320px; overflow-y: auto;"></div>
       <div style="font-size: 9.5px; color: var(--text-muted); border-top: 1px solid var(--border-subtle); padding-top: 4px; display: flex; justify-content: space-between;">
-        <span>Multi-Exchange Feeds: MCX, NSE, BSE, FX &amp; Binance</span><span>Data may be delayed up to 15m</span>
+        <span>Multi-Exchange Feeds: NSE, BSE, MCX, FX &amp; Binance</span><span>Real-time Technical Data</span>
       </div>
     </div>
   </div>
@@ -1265,7 +1239,7 @@
       <button class="modal-close-btn" onclick="document.getElementById('modal-add-journal').classList.remove('active')">✕</button>
       <h3 style="font-size: 14px; font-weight: 700;">Record Technical Observation</h3>
       <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px;">
-        <div class="form-group"><label>Symbol</label><input type="text" id="jn-sym" class="form-input" value="NATURALGAS"></div>
+        <div class="form-group"><label>Symbol</label><input type="text" id="jn-sym" class="form-input" value="RELIANCE"></div>
         <div class="form-group"><label>Timeframe</label><input type="text" id="jn-tf" class="form-input" value="1D"></div>
       </div>
       <div class="form-group"><label>Setup Observed</label><input type="text" id="jn-setup" class="form-input" placeholder="e.g. Bullish Engulfing near 200 EMA"></div>
@@ -1297,18 +1271,65 @@
     const USER_STATE = {
       isPro: false,
       theme: "dark",
-      activeSymbol: "NATURALGAS",
-      activeExchange: "MCX",
-      activeAssetClass: "COMMODITIES",
+      activeSymbol: "RELIANCE",
+      activeExchange: "NSE",
+      activeAssetClass: "NSE",
       activeTimeframe: "1D",
       chartStyle: "candles", // "candles" | "line" | "area"
       indicators: { ema: true, bb: true, supertrend: true, vwap: true, sr: true, rsi: true, macd: true },
-      watchlist: ["NATURALGAS", "CRUDEOIL", "GOLD", "RELIANCE", "NIFTY 50", "BTC/USDT"],
+      watchlist: ["RELIANCE", "TCS", "HDFCBANK", "BHARTIARTL", "NATURALGAS", "CRUDEOIL", "GOLD", "BTC/USDT"],
       journal: []
     };
 
-    /* 2. COMPREHENSIVE SYMBOL UNIVERSE (INDIAN STOCKS, INDICES, COMMODITIES, FOREX, CRYPTO) */
+    /* 2. COMPREHENSIVE SYMBOL UNIVERSE (45+ INDIAN SHARES, COMMODITIES, INDICES, FOREX, CRYPTO) */
     const SYMBOL_UNIVERSE = [
+      // TOP INDIAN SHARES (NSE)
+      { symbol: "RELIANCE", name: "Reliance Industries Ltd.", exchange: "NSE", category: "NSE", basePrice: 2940.40, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", category: "NSE", basePrice: 4210.80, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1642.30, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "BHARTIARTL", name: "Bharti Airtel Ltd.", exchange: "NSE", category: "NSE", basePrice: 1710.50, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "ICICIBANK", name: "ICICI Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1248.60, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "INFY", name: "Infosys Ltd.", exchange: "NSE", category: "NSE", basePrice: 1895.50, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "SBIN", name: "State Bank of India", exchange: "NSE", category: "NSE", basePrice: 795.60, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "HINDUNILVR", name: "Hindustan Unilever Ltd.", exchange: "NSE", category: "NSE", basePrice: 2980.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "ITC", name: "ITC Ltd.", exchange: "NSE", category: "NSE", basePrice: 512.20, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "LT", name: "Larsen & Toubro Ltd.", exchange: "NSE", category: "NSE", basePrice: 3620.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "BAJFINANCE", name: "Bajaj Finance Ltd.", exchange: "NSE", category: "NSE", basePrice: 7320.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", category: "NSE", basePrice: 968.75, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "KOTAKBANK", name: "Kotak Mahindra Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1875.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "AXISBANK", name: "Axis Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1240.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "ADANIENT", name: "Adani Enterprises Ltd.", exchange: "NSE", category: "NSE", basePrice: 3140.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "ADANIPORTS", name: "Adani Ports & SEZ Ltd.", exchange: "NSE", category: "NSE", basePrice: 1435.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "MARUTI", name: "Maruti Suzuki India Ltd.", exchange: "NSE", category: "NSE", basePrice: 12850.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "SUNPHARMA", name: "Sun Pharmaceutical Industries", exchange: "NSE", category: "NSE", basePrice: 1910.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "TITAN", name: "Titan Company Ltd.", exchange: "NSE", category: "NSE", basePrice: 3760.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "TATASTEEL", name: "Tata Steel Ltd.", exchange: "NSE", category: "NSE", basePrice: 162.50, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "POWERGRID", name: "Power Grid Corp of India", exchange: "NSE", category: "NSE", basePrice: 348.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "NTPC", name: "NTPC Ltd.", exchange: "NSE", category: "NSE", basePrice: 425.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "WIPRO", name: "Wipro Ltd.", exchange: "NSE", category: "NSE", basePrice: 545.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "COALINDIA", name: "Coal India Ltd.", exchange: "NSE", category: "NSE", basePrice: 505.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "ONGC", name: "Oil & Natural Gas Corp", exchange: "NSE", category: "NSE", basePrice: 295.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "ASIANPAINT", name: "Asian Paints Ltd.", exchange: "NSE", category: "NSE", basePrice: 3320.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "JSWSTEEL", name: "JSW Steel Ltd.", exchange: "NSE", category: "NSE", basePrice: 995.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "HCLTECH", name: "HCL Technologies Ltd.", exchange: "NSE", category: "NSE", basePrice: 1780.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "TECHM", name: "Tech Mahindra Ltd.", exchange: "NSE", category: "NSE", basePrice: 1610.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "ZOMATO", name: "Zomato Ltd.", exchange: "NSE", category: "NSE", basePrice: 282.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "JIOFIN", name: "Jio Financial Services Ltd.", exchange: "NSE", category: "NSE", basePrice: 355.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "HAL", name: "Hindustan Aeronautics Ltd.", exchange: "NSE", category: "NSE", basePrice: 4450.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "BEL", name: "Bharat Electronics Ltd.", exchange: "NSE", category: "NSE", basePrice: 295.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "VEDL", name: "Vedanta Ltd.", exchange: "NSE", category: "NSE", basePrice: 498.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "IRFC", name: "Indian Railway Finance Corp", exchange: "NSE", category: "NSE", basePrice: 178.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "SUZLON", name: "Suzlon Energy Ltd.", exchange: "NSE", category: "NSE", basePrice: 82.50, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "TRENT", name: "Trent Ltd.", exchange: "NSE", category: "NSE", basePrice: 7450.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "NESTLEIND", name: "Nestle India Ltd.", exchange: "NSE", category: "NSE", basePrice: 2680.00, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
+      { symbol: "HEROMOTOCO", name: "Hero MotoCorp Ltd.", exchange: "NSE", category: "NSE", basePrice: 5750.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "EICHERMOT", name: "Eicher Motors Ltd.", exchange: "NSE", category: "NSE", basePrice: 4920.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "BAJAJ-AUTO", name: "Bajaj Auto Ltd.", exchange: "NSE", category: "NSE", basePrice: 11920.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "ULTRACEMCO", name: "UltraTech Cement Ltd.", exchange: "NSE", category: "NSE", basePrice: 11450.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "GRASIM", name: "Grasim Industries Ltd.", exchange: "NSE", category: "NSE", basePrice: 2680.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "INDUSINDBK", name: "IndusInd Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1430.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+      { symbol: "CIPLA", name: "Cipla Ltd.", exchange: "NSE", category: "NSE", basePrice: 1640.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
+
       // COMMODITIES (MCX)
       { symbol: "NATURALGAS", name: "Natural Gas Futures", exchange: "MCX", category: "COMMODITIES", basePrice: 228.40, tickDecimals: 2, isLeveraged: true, unit: "mmBtu" },
       { symbol: "CRUDEOIL", name: "Crude Oil Futures", exchange: "MCX", category: "COMMODITIES", basePrice: 6180.00, tickDecimals: 2, isLeveraged: true, unit: "BBL" },
@@ -1316,23 +1337,11 @@
       { symbol: "SILVER", name: "Silver 1kg Futures", exchange: "MCX", category: "COMMODITIES", basePrice: 91200.00, tickDecimals: 2, isLeveraged: true, unit: "1kg" },
       { symbol: "COPPER", name: "Copper 1kg Futures", exchange: "MCX", category: "COMMODITIES", basePrice: 835.50, tickDecimals: 2, isLeveraged: true, unit: "1kg" },
 
-      // INDIAN EQUITIES (NSE)
-      { symbol: "RELIANCE", name: "Reliance Industries Ltd.", exchange: "NSE", category: "NSE", basePrice: 2940.40, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "TCS", name: "Tata Consultancy Services Ltd.", exchange: "NSE", category: "NSE", basePrice: 4210.80, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "INFY", name: "Infosys Ltd.", exchange: "NSE", category: "NSE", basePrice: 1895.50, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "HDFCBANK", name: "HDFC Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1642.30, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "ICICIBANK", name: "ICICI Bank Ltd.", exchange: "NSE", category: "NSE", basePrice: 1248.60, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "TATAMOTORS", name: "Tata Motors Ltd.", exchange: "NSE", category: "NSE", basePrice: 968.75, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "SBIN", name: "State Bank of India", exchange: "NSE", category: "NSE", basePrice: 795.60, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "BAJFINANCE", name: "Bajaj Finance Ltd.", exchange: "NSE", category: "NSE", basePrice: 7320.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "ADANIENT", name: "Adani Enterprises Ltd.", exchange: "NSE", category: "NSE", basePrice: 3140.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-      { symbol: "ITC", name: "ITC Ltd.", exchange: "NSE", category: "NSE", basePrice: 512.20, tickDecimals: 2, isLeveraged: false, unit: "Shares" },
-      { symbol: "LT", name: "Larsen & Toubro Ltd.", exchange: "NSE", category: "NSE", basePrice: 3620.00, tickDecimals: 2, isLeveraged: true, unit: "Shares" },
-
       // BENCHMARK INDICES
       { symbol: "NIFTY 50", name: "NIFTY 50 Benchmark Index", exchange: "NSE", category: "INDICES", basePrice: 25810.00, tickDecimals: 2, isLeveraged: true, unit: "Pts" },
       { symbol: "BANK NIFTY", name: "NIFTY Bank Index", exchange: "NSE", category: "INDICES", basePrice: 53950.00, tickDecimals: 2, isLeveraged: true, unit: "Pts" },
       { symbol: "FINNIFTY", name: "NIFTY Financial Services", exchange: "NSE", category: "INDICES", basePrice: 24680.00, tickDecimals: 2, isLeveraged: true, unit: "Pts" },
+      { symbol: "MIDCPNIFTY", name: "NIFTY Midcap Select Index", exchange: "NSE", category: "INDICES", basePrice: 13240.00, tickDecimals: 2, isLeveraged: true, unit: "Pts" },
       { symbol: "SENSEX", name: "BSE SENSEX 30", exchange: "BSE", category: "INDICES", basePrice: 84290.00, tickDecimals: 2, isLeveraged: false, unit: "Pts" },
 
       // FOREX CURRENCY PAIRS
@@ -1348,7 +1357,8 @@
       { symbol: "ETH/USDT", name: "Ethereum / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 2640.50, tickDecimals: 2, isLeveraged: true, unit: "ETH" },
       { symbol: "SOL/USDT", name: "Solana / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 154.20, tickDecimals: 2, isLeveraged: true, unit: "SOL" },
       { symbol: "BNB/USDT", name: "BNB / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 595.00, tickDecimals: 2, isLeveraged: true, unit: "BNB" },
-      { symbol: "XRP/USDT", name: "Ripple / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 0.5850, tickDecimals: 4, isLeveraged: true, unit: "XRP" }
+      { symbol: "XRP/USDT", name: "Ripple / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 0.5850, tickDecimals: 4, isLeveraged: true, unit: "XRP" },
+      { symbol: "DOGE/USDT", name: "Dogecoin / Tether USD", exchange: "BINANCE", category: "CRYPTO", basePrice: 0.1250, tickDecimals: 4, isLeveraged: true, unit: "DOGE" }
     ];
 
     /* 3. SIMULATED PAPER TRADING ENGINE (₹10,00,000 STARTING CAPITAL) */
@@ -1357,7 +1367,7 @@
         capital: 1000000,
         usedMargin: 0,
         realizedPnL: 0,
-        positions: [], // { id, symbol, side, qty, entryPrice, currentPrice, sl, tp, pnl, pnlPct, time }
+        positions: [],
         history: []
       },
 
@@ -1392,7 +1402,7 @@
         if (qty <= 0) { showToast("Please specify a valid quantity."); return false; }
         const sym = SYMBOL_UNIVERSE.find(s => s.symbol === symbol) || SYMBOL_UNIVERSE[0];
         const execPrice = price || sym.basePrice;
-        const marginReq = (execPrice * qty) * (sym.isLeveraged ? 0.20 : 1.0); // 20% margin for leveraged
+        const marginReq = (execPrice * qty) * (sym.isLeveraged ? 0.20 : 1.0);
 
         const availCash = this.account.capital - this.account.usedMargin;
         if (marginReq > availCash) {
@@ -1403,7 +1413,7 @@
         const position = {
           id: 'pos_' + Date.now(),
           symbol: symbol,
-          side: side, // 'BUY' or 'SELL'
+          side: side,
           qty: qty,
           entryPrice: execPrice,
           currentPrice: execPrice,
@@ -1464,7 +1474,6 @@
           if (pos.symbol === symbol) {
             pos.currentPrice = newPrice;
             anyUpdated = true;
-            // Check SL & TP trigger
             if (pos.side === 'BUY') {
               if (pos.sl && newPrice <= pos.sl) this.closePosition(pos.id);
               else if (pos.tp && newPrice >= pos.tp) this.closePosition(pos.id);
@@ -1480,13 +1489,10 @@
       renderUI() {
         let unrealizedTotal = 0;
         this.account.positions.forEach(pos => {
-          let pnl = 0;
-          if (pos.side === 'BUY') pnl = (pos.currentPrice - pos.entryPrice) * pos.qty;
-          else pnl = (pos.entryPrice - pos.currentPrice) * pos.qty;
+          let pnl = pos.side === 'BUY' ? (pos.currentPrice - pos.entryPrice) * pos.qty : (pos.entryPrice - pos.currentPrice) * pos.qty;
           unrealizedTotal += pnl;
         });
 
-        // Balance stats
         const capEl = document.getElementById('terminal-balance-display');
         if (capEl) capEl.innerText = `₹${Math.round(this.account.capital).toLocaleString('en-IN')}`;
         
@@ -1507,12 +1513,11 @@
         const tabPosNum = document.getElementById('ttab-pos-num');
         if (tabPosNum) tabPosNum.innerText = this.account.positions.length;
 
-        // Render Quick Positions Table
         const qTb = document.getElementById('quick-positions-tbody');
         const fTb = document.getElementById('full-positions-tbody');
         if (qTb) {
           if (this.account.positions.length === 0) {
-            qTb.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:18px;">No open simulated trades. Use the order slip on the left to trade.</td></tr>`;
+            qTb.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:16px;">No open simulated trades. Use the order slip to trade.</td></tr>`;
           } else {
             qTb.innerHTML = this.account.positions.map(p => {
               const sym = SYMBOL_UNIVERSE.find(s => s.symbol === p.symbol) || { tickDecimals: 2 };
@@ -1536,7 +1541,7 @@
 
         if (fTb) {
           if (this.account.positions.length === 0) {
-            fTb.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--text-muted); padding:20px;">No open positions.</td></tr>`;
+            fTb.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--text-muted); padding:18px;">No open positions.</td></tr>`;
           } else {
             fTb.innerHTML = this.account.positions.map(p => {
               const sym = SYMBOL_UNIVERSE.find(s => s.symbol === p.symbol) || { tickDecimals: 2 };
@@ -1560,7 +1565,6 @@
           }
         }
 
-        // Render History Table
         const hTb = document.getElementById('history-tbody');
         if (hTb) {
           if (this.account.history.length === 0) {
@@ -1591,8 +1595,8 @@
           gain.connect(ctx.destination);
           osc.type = 'sine';
           if (isPositive) {
-            osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15); // A5
+            osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.15);
           } else {
             osc.frequency.setValueAtTime(440, ctx.currentTime);
             osc.frequency.exponentialRampToValueAtTime(330, ctx.currentTime + 0.15);
@@ -1885,13 +1889,11 @@
       }
     };
 
-    /* 6. ADVANCED CHART CONTROLLER WITH CLARITY & HIGH CONTRAST */
+    /* 6. ADVANCED CHART CONTROLLER */
     class ChartController {
       constructor() {
         this.chart = null;
         this.csSeries = null;
-        this.lineSeries = null;
-        this.areaSeries = null;
         this.volSeries = null;
         this.seriesMap = {};
         this.priceLines = [];
@@ -1935,7 +1937,6 @@
               }
             });
 
-            // Series types
             this.csSeries = this.chart.addCandlestickSeries({
               upColor: '#089981', downColor: '#f23645',
               borderVisible: false,
@@ -2003,13 +2004,11 @@
           ctx.strokeStyle = isG ? '#089981' : '#f23645';
           ctx.fillStyle = isG ? '#089981' : '#f23645';
 
-          // Wick
           ctx.beginPath();
           ctx.moveTo(x, highY);
           ctx.lineTo(x, lowY);
           ctx.stroke();
 
-          // Body
           const top = Math.min(openY, closeY);
           const bodyH = Math.max(2, Math.abs(closeY - openY));
           ctx.fillRect(x - barW / 2, top, barW, bodyH);
@@ -2092,7 +2091,6 @@
       }
 
       renderCanvases() {
-        // RSI Canvas
         const rEl = document.getElementById('rsi-canvas-container');
         if (rEl && USER_STATE.indicators.rsi) {
           rEl.innerHTML = `<canvas id="rsi-c" style="width:100%;height:100%;"></canvas>`;
@@ -2119,7 +2117,6 @@
           }
         }
 
-        // MACD Canvas
         const mEl = document.getElementById('macd-canvas-container');
         if (mEl && USER_STATE.indicators.macd) {
           mEl.innerHTML = `<canvas id="macd-c" style="width:100%;height:100%;"></canvas>`;
@@ -2205,6 +2202,8 @@
     /* 7. PRO MODULES */
     const ProModules = {
       initMTF() {
+        const symObj = SYMBOL_UNIVERSE.find(x => x.symbol === USER_STATE.activeSymbol) || SYMBOL_UNIVERSE[0];
+        document.getElementById('mtf-sym-title').innerText = `${symObj.symbol} (${symObj.exchange})`;
         ['1d', '1h', '15m'].forEach(tf => {
           const el = document.getElementById(`mtf-chart-${tf}`);
           if (!el) return;
@@ -2212,24 +2211,22 @@
           const isDark = document.body.getAttribute('data-theme') !== 'light';
           if (typeof LightweightCharts === 'undefined') return;
           const c = LightweightCharts.createChart(el, {
-            width: el.clientWidth || 300, height: el.clientHeight || 200,
-            layout: { background: { color: isDark ? '#111520' : '#ffffff' }, textColor: isDark ? '#8d93a5' : '#5d606b', fontSize: 10 },
+            width: el.clientWidth || 300, height: el.clientHeight || 130,
+            layout: { background: { color: isDark ? '#111520' : '#ffffff' }, textColor: isDark ? '#8d93a5' : '#5d606b', fontSize: 9 },
             grid: { vertLines: { color: isDark ? '#171b26' : '#f0f3fa' }, horzLines: { color: isDark ? '#171b26' : '#f0f3fa' } },
             timeScale: { borderColor: isDark ? '#262c3d' : '#d6dce7' }
           });
           const s = c.addCandlestickSeries({ upColor: '#089981', downColor: '#f23645', borderVisible: false, wickUpColor: '#089981', wickDownColor: '#f23645' });
-          const symObj = SYMBOL_UNIVERSE.find(x => x.symbol === USER_STATE.activeSymbol) || SYMBOL_UNIVERSE[0];
-          s.setData(generateCandleData(symObj, tf.toUpperCase(), 80));
+          s.setData(generateCandleData(symObj, tf.toUpperCase(), 60));
           c.timeScale().fitContent();
         });
       },
 
       runBacktest() {
-        const symKey = document.getElementById('bt-sym').value;
+        const symKey = document.getElementById('bt-sym').value || USER_STATE.activeSymbol;
         const initialCap = parseFloat(document.getElementById('bt-cap').value) || 100000;
-        const days = parseInt(document.getElementById('bt-period').value) || 365;
         const sym = SYMBOL_UNIVERSE.find(s => s.symbol === symKey) || SYMBOL_UNIVERSE[0];
-        const candles = generateCandleData(sym, "1D", days);
+        const candles = generateCandleData(sym, "1D", 180);
 
         const ema9 = TechnicalAnalysis.calculateEMA(candles, 9);
         const ema21 = TechnicalAnalysis.calculateEMA(candles, 21);
@@ -2265,17 +2262,14 @@
         const total = trades.length;
         const wr = total > 0 ? ((wins / total) * 100).toFixed(1) : 0;
         const net = cap - initialCap;
-        const netPct = ((net / initialCap) * 100).toFixed(1);
 
         document.getElementById('bt-wr').innerText = `${wr}%`;
         const pnlEl = document.getElementById('bt-pnl');
-        pnlEl.innerText = `${net >= 0 ? '+₹' : '-₹'}${Math.abs(Math.round(net)).toLocaleString('en-IN')} (${net >= 0 ? '+' : ''}${netPct}%)`;
+        pnlEl.innerText = `${net >= 0 ? '+₹' : '-₹'}${Math.abs(Math.round(net)).toLocaleString('en-IN')}`;
         pnlEl.className = `m-val ${net >= 0 ? 'color-bullish' : 'color-bearish'}`;
         document.getElementById('bt-dd').innerText = `-${maxDD.toFixed(1)}%`;
-        document.getElementById('bt-trades').innerText = `${total} (${wins}W / ${total - wins}L)`;
 
         this.drawEquityCurve(curve, initialCap);
-        this.lastTrades = trades;
         showToast("Backtest executed successfully.");
       },
 
@@ -2321,7 +2315,7 @@
 
         SYMBOL_UNIVERSE.forEach(s => {
           if (asset !== "ALL" && s.category !== asset) return;
-          const c = generateCandleData(s, "1D", 60);
+          const c = generateCandleData(s, "1D", 40);
           const last = c[c.length - 1], prev = c[c.length - 2];
           const chg = ((last.close - prev.close) / prev.close) * 100;
           const rsi = TechnicalAnalysis.calculateRSI(c, 14).pop().value;
@@ -2335,17 +2329,18 @@
           if (trF === "ABOVE_EMA200" && last.close <= ema200) return;
 
           const tr = document.createElement('tr');
-          tr.onclick = () => selectSymbol(s.symbol);
+          tr.onclick = () => {
+            selectSymbol(s.symbol);
+            showToast(`Loaded ${s.symbol} on Big Screen Chart`);
+          };
           tr.innerHTML = `
             <td><strong>${s.symbol}</strong></td>
             <td><span class="ind-pill" style="font-size:9px; padding:1px 4px;">${s.category}</span></td>
             <td style="font-family:var(--font-mono);">₹${last.close.toFixed(s.tickDecimals)}</td>
             <td class="${chg >= 0 ? 'color-bullish' : 'color-bearish'}" style="font-family:var(--font-mono);">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</td>
             <td class="${rsi < 35 ? 'color-bullish' : (rsi > 65 ? 'color-bearish' : '')}" style="font-family:var(--font-mono);">${rsi.toFixed(1)}</td>
-            <td><span class="color-bullish">Bullish</span></td>
-            <td>${last.close > ema200 ? '<span class="color-bullish">Above</span>' : '<span class="color-bearish">Below</span>'}</td>
             <td><span class="${st.trend === 1 ? 'color-bullish' : 'color-bearish'}">${st.trend === 1 ? 'Green' : 'Red'}</span></td>
-            <td><button class="ind-pill" style="font-size:9.5px; padding:2px 6px;">Load</button></td>
+            <td><button class="ind-pill" style="font-size:9.5px; padding:2px 6px;">Load Chart</button></td>
           `;
           tb.appendChild(tr);
         });
@@ -2396,14 +2391,14 @@
         if (!tb) return;
         tb.innerHTML = "";
         if (USER_STATE.journal.length === 0) {
-          tb.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:16px;">No study entries recorded yet. Click "+ New Study Note" above.</td></tr>`;
+          tb.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:16px;">No study entries recorded yet. Click "+ New Note" above.</td></tr>`;
           return;
         }
         USER_STATE.journal.forEach((j, i) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td>${j.date}</td><td><strong>${j.symbol}</strong></td><td><span class="ind-pill" style="font-size:9px;">${j.tf}</span></td>
-            <td>${j.setup}</td><td>${j.reason}</td><td class="color-bullish">${j.outcome}</td>
+            <td>${j.setup}</td><td class="color-bullish">${j.outcome}</td>
             <td><button class="ind-pill" onclick="deleteJournal(${i})" style="color:var(--bearish); padding:1px 5px;">Delete</button></td>
           `;
           tb.appendChild(tr);
@@ -2436,14 +2431,65 @@
       });
     }
 
-    /* 9. COMPLIANCE CONTROLLER */
+    /* 9. SLIDE-OUT LEFT DRAWER CONTROLLER (KEEPS BIG CHART VISIBLE) */
+    let activeDrawer = null;
+
+    function openLeftDrawer(drawerId, title) {
+      const drawer = document.getElementById('left-side-drawer');
+      const titleEl = document.getElementById('drawer-title-text');
+      if (titleEl) titleEl.innerHTML = title;
+
+      document.querySelectorAll('.drawer-tool-pane').forEach(p => p.classList.remove('active'));
+      const pane = document.getElementById(`drawer-pane-${drawerId}`);
+      if (pane) pane.classList.add('active');
+
+      drawer.classList.add('open');
+      activeDrawer = drawerId;
+
+      document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
+      const navBtn = document.querySelector(`#sidebar .nav-item[data-drawer="${drawerId}"]`);
+      if (navBtn) navBtn.classList.add('active');
+
+      if (drawerId === 'screener') ProModules.renderScreener();
+      if (drawerId === 'journal') ProModules.renderJournal();
+      if (drawerId === 'mtf') setTimeout(() => ProModules.initMTF(), 50);
+      if (drawerId === 'calculator') {
+        document.getElementById('calc-entry').value = (SYMBOL_UNIVERSE.find(s => s.symbol === USER_STATE.activeSymbol) || { basePrice: 2940 }).basePrice;
+        ProModules.calcPosition();
+      }
+    }
+
+    function closeLeftDrawer() {
+      const drawer = document.getElementById('left-side-drawer');
+      drawer.classList.remove('open');
+      activeDrawer = null;
+
+      document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
+      const chartBtn = document.querySelector('#sidebar .nav-item[data-action="chart"]');
+      if (chartBtn) chartBtn.classList.add('active');
+
+      setTimeout(() => {
+        if (chartCtrl && chartCtrl.chart) {
+          const el = document.getElementById('tv-chart-container');
+          if (el) chartCtrl.chart.applyOptions({ width: el.clientWidth, height: el.clientHeight });
+        }
+      }, 260);
+    }
+
+    function toggleLeftDrawer(drawerId, title) {
+      if (activeDrawer === drawerId) {
+        closeLeftDrawer();
+      } else {
+        openLeftDrawer(drawerId, title);
+      }
+    }
+
+    /* 10. COMPLIANCE CONTROLLER */
     function setComplianceMode(mode) {
       COMPLIANCE_MODE = mode;
       const pill = document.getElementById('header-compliance-pill');
       const label = document.getElementById('header-compliance-label');
       const footer = document.getElementById('footer-disclaimer-text');
-      const legal = document.getElementById('legal-statutory-notice');
-      const sebiBox = document.getElementById('sebi-detail-box');
 
       if (mode === "SEBI_REGISTERED") {
         pill.className = "compliance-pill sebi";
@@ -2452,20 +2498,12 @@
           <strong>SEBI Registered Research Analyst: ${SEBI_CONFIG.regNo}</strong> | Entity: ${SEBI_CONFIG.ownerName} | Validity: ${SEBI_CONFIG.validity}.
           Investments in securities market are subject to market risks. Read all related documents carefully before investing. Registration granted by SEBI and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors.
         `;
-        legal.innerHTML = `
-          <strong>SEBI Registered Status:</strong> Registration granted by SEBI (${SEBI_CONFIG.regNo}) and certification from NISM in no way guarantee performance of the intermediary or provide any assurance of returns to investors. All content is strictly research analysis.
-        `;
-        if (sebiBox) sebiBox.style.display = "flex";
       } else {
         pill.className = "compliance-pill educational";
         label.innerText = "EDUCATIONAL MODE";
         footer.innerText = `
           Investments in securities market are subject to market risks. Read all related documents carefully before investing. This platform provides technical analysis tools and simulated paper trading for educational and informational purposes only. It is not investment advice or a research recommendation. We are not registered as an Investment Adviser or Research Analyst with SEBI.
         `;
-        legal.innerHTML = `
-          <strong>Educational Mode Status:</strong> ZenithPulse Analytics&trade; is not registered as an Investment Adviser or Research Analyst with SEBI. Nothing on this platform constitutes an investment recommendation, buy/sell call, price target, or financial advisory service.
-        `;
-        if (sebiBox) sebiBox.style.display = "none";
       }
 
       if (window.chartCtrl && window.chartCtrl.currentData.length > 0) {
@@ -2473,7 +2511,7 @@
       }
     }
 
-    /* 10. UI DISPATCHERS & SYMBOL SELECTION */
+    /* 11. UI DISPATCHERS & SYMBOL SELECTION */
     let chartCtrl = null;
 
     function selectSymbol(symKey) {
@@ -2488,14 +2526,12 @@
       document.getElementById('wm-symbol-text').innerText = sym.symbol;
       document.getElementById('chart-toolbar-sym').innerText = `${sym.symbol} (${sym.exchange})`;
 
-      // Order ticket sync
       const pIn = document.getElementById('trade-price-input');
       if (pIn) pIn.value = sym.basePrice.toFixed(sym.tickDecimals);
       const bkKite = document.getElementById('bk-sym-kite');
       if (bkKite) bkKite.innerText = sym.symbol;
       updateMarginEstimate();
 
-      // Banner check
       const ban = document.getElementById('leveraged-risk-banner');
       if (ban) ban.style.display = sym.isLeveraged ? "flex" : "none";
 
@@ -2503,7 +2539,6 @@
       chartCtrl.load(data);
       renderQuickRail(document.querySelector('.rail-cat-btn.active')?.getAttribute('data-rail-cat') || "ALL");
       document.getElementById('modal-symbol-search').classList.remove('active');
-      showToast(`Loaded ${sym.symbol} (${sym.exchange})`);
     }
 
     function showToast(msg) {
@@ -2528,7 +2563,7 @@
       showToast("Note deleted.");
     }
 
-    /* 11. LIFECYCLE INITIALIZATION */
+    /* 12. LIFECYCLE INITIALIZATION */
     window.addEventListener('DOMContentLoaded', () => {
       // First visit modal
       if (!localStorage.getItem('zenith_ack')) {
@@ -2547,6 +2582,12 @@
         if (th) { USER_STATE.theme = th; document.body.setAttribute('data-theme', th); }
       } catch (e) {}
 
+      // Populate Backtest Select
+      const btSel = document.getElementById('bt-sym');
+      if (btSel) {
+        btSel.innerHTML = SYMBOL_UNIVERSE.slice(0, 15).map(s => `<option value="${s.symbol}">${s.symbol} (${s.exchange})</option>`).join('');
+      }
+
       // Init chart
       chartCtrl = new ChartController();
       window.chartCtrl = chartCtrl;
@@ -2557,9 +2598,7 @@
       TradingTerminal.init();
       renderQuickRail("ALL");
       ProModules.renderWatchlist();
-      ProModules.renderScreener();
       ProModules.calcPosition();
-      ProModules.renderJournal();
       setComplianceMode(COMPLIANCE_MODE);
       updateMarginEstimate();
 
@@ -2570,6 +2609,40 @@
           btn.classList.add('active');
           renderQuickRail(btn.getAttribute('data-rail-cat'));
         });
+      });
+
+      // Left Sidebar Navigation & Drawer Toggling
+      document.querySelector('#sidebar .nav-item[data-action="chart"]').addEventListener('click', () => {
+        closeLeftDrawer();
+        showToast("Big Screen Chart Active");
+      });
+
+      const drawerTitles = {
+        screener: '<span>📊</span> Automated Technical Market Screener',
+        journal: '<span>📖</span> Trade Observation &amp; Study Journal',
+        mtf: '<span>🔲</span> Multi-Timeframe Analysis Matrix (Pro)',
+        backtest: '<span>📈</span> Strategy Backtester (Pro)',
+        calculator: '<span>🧮</span> Position Size Calculator',
+        legal: '<span>⚖️</span> Regulatory Disclosures &amp; DPDP Center',
+        settings: '<span>⚙️</span> Settings &amp; Compliance Mode'
+      };
+
+      document.querySelectorAll('#sidebar .nav-item[data-drawer]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const dId = btn.getAttribute('data-drawer');
+          const title = drawerTitles[dId] || dId;
+          toggleLeftDrawer(dId, title);
+        });
+      });
+
+      document.getElementById('btn-close-left-drawer').addEventListener('click', () => {
+        closeLeftDrawer();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && activeDrawer) {
+          closeLeftDrawer();
+        }
       });
 
       // Terminal expand / collapse toggle
@@ -2624,7 +2697,6 @@
         btnSubmit.classList.add('is-sell');
       });
 
-      // Place Order button
       btnSubmit.addEventListener('click', () => {
         const type = document.getElementById('trade-order-type').value;
         const price = parseFloat(document.getElementById('trade-price-input').value);
@@ -2634,18 +2706,16 @@
         TradingTerminal.placeOrder(USER_STATE.activeSymbol, activeOrderSide, type, qty, price, sl, tp);
       });
 
-      // Input changes margin update
       ['trade-price-input', 'trade-qty-input', 'trade-sl-input', 'trade-tp-input'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.addEventListener('input', updateMarginEstimate);
       });
 
-      // Reset virtual account
       document.getElementById('btn-reset-virtual-acc').addEventListener('click', () => {
         if (confirm("Reset paper trading portfolio back to ₹10,00,000.00?")) TradingTerminal.reset();
       });
 
-      // Chart styles (Candles / Line / Area)
+      // Chart styles
       document.getElementById('btn-chart-style-candles').addEventListener('click', () => {
         document.querySelectorAll('.chart-mini-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('btn-chart-style-candles').classList.add('active');
@@ -2659,7 +2729,7 @@
         if (!document.fullscreenElement) {
           if (chartElem.requestFullscreen) chartElem.requestFullscreen();
           else if (chartElem.webkitRequestFullscreen) chartElem.webkitRequestFullscreen();
-          showToast("Fullscreen View Activated (Press ESC to exit)");
+          showToast("Fullscreen Big Screen Chart Active (Press ESC to exit)");
         } else {
           if (document.exitFullscreen) document.exitFullscreen();
         }
@@ -2679,21 +2749,6 @@
       document.getElementById('btn-zoom-reset').addEventListener('click', () => {
         if (!chartCtrl.chart) return;
         chartCtrl.chart.timeScale().fitContent();
-      });
-
-      // Sidebar routing
-      document.querySelectorAll('#sidebar .nav-item').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const vId = btn.getAttribute('data-view');
-          if (!vId) return;
-          document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-          const target = document.getElementById(vId);
-          if (target) target.classList.add('active');
-          if (vId === 'mtf-view') ProModules.initMTF();
-          if (vId === 'screener-view') ProModules.renderScreener();
-        });
       });
 
       // Timeframe buttons
@@ -2731,6 +2786,12 @@
 
       document.getElementById('btn-toggle-right-dock').addEventListener('click', () => {
         document.getElementById('app').classList.toggle('right-dock-collapsed');
+        setTimeout(() => {
+          if (chartCtrl.chart) {
+            const el = document.getElementById('tv-chart-container');
+            if (el) chartCtrl.chart.applyOptions({ width: el.clientWidth, height: el.clientHeight });
+          }
+        }, 200);
       });
 
       document.getElementById('btn-theme-toggle').addEventListener('click', () => {
@@ -2801,19 +2862,12 @@
 
       // Calculator inputs
       ['calc-cap', 'calc-risk', 'calc-entry', 'calc-stop'].forEach(id => {
-        document.getElementById(id).addEventListener('input', () => ProModules.calcPosition());
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', () => ProModules.calcPosition());
       });
 
       // Backtest button
       document.getElementById('btn-run-bt').addEventListener('click', () => ProModules.runBacktest());
-      document.getElementById('btn-export-bt-csv').addEventListener('click', () => {
-        if (!ProModules.lastTrades) { showToast("Run backtest first."); return; }
-        let csv = "Entry,Exit,EntryPrice,ExitPrice,PnL,ReturnPct\n";
-        ProModules.lastTrades.forEach(t => csv += `${t.entryT},${t.exitT},${t.entryP},${t.exitP},${t.pnl},${t.pct.toFixed(2)}%\n`);
-        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-        a.download = `Backtest_${USER_STATE.activeSymbol}.csv`; a.click();
-        showToast("CSV exported.");
-      });
 
       // Journal modal & save
       document.getElementById('btn-open-jn-modal').addEventListener('click', () => {
@@ -2823,18 +2877,35 @@
       });
       document.getElementById('btn-save-jn').addEventListener('click', () => {
         const entry = {
-          date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+          date: new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
           symbol: document.getElementById('jn-sym').value,
           tf: document.getElementById('jn-tf').value,
-          setup: document.getElementById('jn-setup').value || "Setup",
-          reason: document.getElementById('jn-reason').value || "Technical Confluence",
-          outcome: document.getElementById('jn-outcome').value || "Under Observation"
+          setup: document.getElementById('jn-setup').value || "Technical Setup",
+          reason: document.getElementById('jn-reason').value || "Confluence",
+          outcome: document.getElementById('jn-outcome').value || "Under Study"
         };
         USER_STATE.journal.unshift(entry);
         localStorage.setItem('zenith_jn', JSON.stringify(USER_STATE.journal));
         ProModules.renderJournal();
         document.getElementById('modal-add-journal').classList.remove('active');
         showToast("Study note saved in local storage.");
+      });
+
+      document.getElementById('btn-export-jn-csv').addEventListener('click', () => {
+        if (USER_STATE.journal.length === 0) { showToast("No notes to export."); return; }
+        let csv = "Date,Symbol,Timeframe,Setup,Outcome\n";
+        USER_STATE.journal.forEach(j => csv += `"${j.date}","${j.symbol}","${j.tf}","${j.setup}","${j.outcome}"\n`);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = "ZenithPulse_TradeJournal.csv"; a.click();
+        showToast("Journal CSV exported.");
+      });
+
+      document.getElementById('btn-export-screener-csv').addEventListener('click', () => {
+        let csv = "Symbol,Exchange,Category,Price\n";
+        SYMBOL_UNIVERSE.forEach(s => csv += `"${s.symbol}","${s.exchange}","${s.category}",${s.basePrice}\n`);
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        a.download = "ZenithPulse_MarketUniverse.csv"; a.click();
+        showToast("Screener CSV exported.");
       });
 
       // Compliance dropdown switch
@@ -2844,23 +2915,18 @@
       });
 
       // DPDP Data Purge
-      const wipe = () => {
+      document.getElementById('btn-dpdp-wipe').addEventListener('click', () => {
         if (confirm("Erase all locally stored watchlists, journals, and simulated trading portfolio under the DPDP Act 2023?")) {
           localStorage.clear();
           USER_STATE.journal = [];
           showToast("Local data erased.");
           location.reload();
         }
-      };
-      document.getElementById('btn-dpdp-wipe').addEventListener('click', wipe);
-      document.getElementById('btn-purge-settings').addEventListener('click', wipe);
+      });
 
       // Footer routing to legal
       const toLegal = () => {
-        document.querySelectorAll('#sidebar .nav-item').forEach(b => b.classList.remove('active'));
-        document.querySelector('[data-view="legal-view"]').classList.add('active');
-        document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-        document.getElementById('legal-view').classList.add('active');
+        openLeftDrawer('legal', '<span>⚖️</span> Regulatory Disclosures &amp; DPDP Center');
       };
       document.getElementById('link-legal').addEventListener('click', toLegal);
       document.getElementById('link-dpdp').addEventListener('click', toLegal);
@@ -2869,7 +2935,8 @@
 
       // Screener Filters
       ['sc-asset', 'sc-rsi', 'sc-trend'].forEach(id => {
-        document.getElementById(id).addEventListener('change', () => ProModules.renderScreener());
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', () => ProModules.renderScreener());
       });
 
       // Live tick simulator (every 3 seconds)

@@ -1,5 +1,5 @@
 # ZenithPulse Analytics™ 📈⚡
-### Institutional-Grade Technical Analysis & Interactive Trading Terminal
+### Institutional-Grade Big Screen Technical Analysis & Interactive Trading Terminal
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Compliance: SEBI Aligned](https://img.shields.io/badge/Compliance-SEBI%20Compliant-green.svg)](https://sebi.gov.in)
@@ -12,33 +12,46 @@
 
 ## 🌟 What's New in this Version
 
-1. **One-Line Quick Market Rail (Side/Top Quick Switcher)**:
-   - Category filters: `[🔥 All] [🇮🇳 Indian Stocks] [📊 Indices] [🛢️ Commodities] [💱 Forex] [🪙 Crypto]`.
-   - Continuous one-line scrolling ticker rail with live prices and % change chips. Switch any market with a single click.
+### 1. 🖥️ Permanent Big Screen Candlestick Chart on Main Page
+- The main viewport is **permanently dedicated to the Big Screen Candlestick Chart**.
+- It is never hidden or replaced when accessing other tools.
+- Supports Fullscreen view (`[ ⛶ ]`), zoom controls (`+`, `-`, `⟲ Reset`), and style switching (`Candles`, `Line`, `Area`).
 
-2. **Expanded Multi-Asset Universe & Commodities**:
-   - **MCX Commodities**: **NATURAL GAS** (`NATURALGAS`), **CRUDE OIL** (`CRUDEOIL`), **GOLD 10g** (`GOLD`), **SILVER 1kg** (`SILVER`), **COPPER** (`COPPER`).
-   - **Indian Equities (NSE)**: RELIANCE, TCS, INFY, HDFCBANK, ICICIBANK, TATAMOTORS, SBIN, BAJFINANCE, ADANIENT, ITC, LT.
-   - **Indian Benchmark Indices**: NIFTY 50, BANK NIFTY, FINNIFTY, SENSEX.
-   - **Forex (FX)**: USD/INR, EUR/INR, GBP/INR, EUR/USD, GBP/USD, USD/JPY.
-   - **Cryptocurrencies**: BTC/USDT, ETH/USDT, SOL/USDT, BNB/USDT, XRP/USDT.
+### 2. 🗂️ Closable Left Side Tool Drawer (Screener & Study Journal)
+- **Automated Technical Market Screener** and **Trade Observation & Study Journal** are now docked in a sleek **slide-out Left Drawer Panel** directly next to the left sidebar icons:
+  - **Open with 1-Click**: Click the Screener or Journal icon on the left to slide open the panel.
+  - **Easy `✕ Close Panel` Button**: Prominent close button in the drawer header (or press `ESC` on your keyboard, or click the icon again) to slide it away immediately.
+  - **Live Multi-Tasking**: While the screener or journal is open on the left, the **Big Screen Chart remains 100% visible and interactive**! Clicking any stock row in the screener loads that chart instantly without losing your screener place!
 
-3. **Ultra-Clear High-Definition Charting View**:
-   - Fullscreen mode toggle (`[ ⛶ ]`) for edge-to-edge monitor analysis.
-   - Candlestick / Line / Mountain Area switcher.
-   - Interactive Zoom In (`+`), Zoom Out (`-`), and Reset Scale (`⟲`).
-   - Multi-indicator overlays: EMA 9, 21, 50, 200, Bollinger Bands, Supertrend, VWAP, Auto S/R, RSI (14), MACD.
+### 3. 🇮🇳 45+ Official Indian Shares & MCX Commodities
+Expanded the symbol universe to match top traded instruments on official Indian broker platforms (Zerodha Kite, Angel One, Groww, Upstox, NSE):
+- **45+ Indian Bluechips & Momentum Shares**:
+  - `RELIANCE`, `TCS`, `HDFCBANK`, `BHARTIARTL`, `ICICIBANK`, `INFY`, `SBIN`, `HINDUNILVR`, `ITC`, `LT`
+  - `BAJFINANCE`, `TATAMOTORS`, `KOTAKBANK`, `AXISBANK`, `ADANIENT`, `ADANIPORTS`, `MARUTI`, `SUNPHARMA`
+  - `TITAN`, `TATASTEEL`, `POWERGRID`, `NTPC`, `WIPRO`, `COALINDIA`, `ONGC`, `ASIANPAINT`, `JSWSTEEL`
+  - `HCLTECH`, `TECHM`, `ZOMATO`, `JIOFIN`, `HAL`, `BEL`, `VEDL`, `IRFC`, `SUZLON`, `TRENT`, `NESTLEIND`
+  - `HEROMOTOCO`, `EICHERMOT`, `BAJAJ-AUTO`, `ULTRACEMCO`, `GRASIM`, `INDUSINDBK`, `CIPLA`
+- **MCX Commodities**:
+  - `NATURALGAS` (Natural Gas Futures - base ₹228.40)
+  - `CRUDEOIL` (Crude Oil Futures - base ₹6,180.00)
+  - `GOLD` (Gold 10g Futures - base ₹75,450.00)
+  - `SILVER` (Silver 1kg Futures - base ₹91,200.00)
+  - `COPPER` (Copper 1kg Futures - base ₹835.50)
+- **Benchmark Indices**:
+  - `NIFTY 50`, `BANK NIFTY`, `FINNIFTY`, `MIDCPNIFTY`, `SENSEX`
+- **Forex (FX) & Crypto**:
+  - `USD/INR`, `EUR/INR`, `GBP/INR`, `EUR/USD`, `GBP/USD`, `USD/JPY`
+  - `BTC/USDT`, `ETH/USDT`, `SOL/USDT`, `BNB/USDT`, `XRP/USDT`, `DOGE/USDT`
 
-4. **Direct Interactive Trading on Website**:
-   - **🎮 Simulated Paper Trading Engine**:
-     - Starting balance: **₹10,00,000.00** virtual capital.
-     - Buy (Long) / Sell (Short) order ticket with Market/Limit, Stop-Loss (₹), Target (₹), and auto Risk:Reward calculator.
-     - Real-time Unrealized P&L updates as simulated prices tick every 3 seconds!
-     - 1-Click "Close Position" button to lock in realized profits/losses into account capital.
-     - Completed trade log with historical return % and net P&L.
-     - Web Audio API execution chimes on orders.
-   - **🚀 1-Click Live Broker Execution Gateway**:
-     - Direct pre-filled order pad launchers for **Zerodha Kite**, **Angel One**, **Upstox Pro**, **Dhan Web**, and **Groww**.
+### 4. 🎮 Interactive Trading Terminal (Trade on this Website)
+- **Simulated Paper Trading**:
+  - **₹10,00,000.00** starting virtual cash.
+  - Buy (Long) / Sell (Short) order ticket with Market/Limit, Stop-Loss, Target, and auto Risk:Reward.
+  - Live Unrealized P&L updates dynamically on every 3-second price tick!
+  - 1-Click "Close Position" to lock in realized profits into account capital.
+  - Synthesized Web Audio API sound chimes on order execution.
+- **1-Click Direct Broker Order Launchers**:
+  - Quick order pads for **Zerodha Kite**, **Angel One**, **Upstox Pro**, **Dhan Web**, and **Groww**.
 
 ---
 
@@ -80,12 +93,14 @@ let COMPLIANCE_MODE = "EDUCATIONAL"; // Options: "EDUCATIONAL" (Default) | "SEBI
 
 To make these new changes live on your GitHub Pages website:
 
-1. Open your repository on GitHub in your web browser:
+1. Open your repository on **[github.com](https://github.com/)** in your web browser:
    `https://github.com/<your-username>/<your-repo-name>`
 2. Click **Add file** ➔ **Upload files**.
-3. Drag and drop the updated [`index.html`](./index.html) and [`README.md`](./README.md) from `c:\vrunda\trading\`.
-4. Click **Commit changes**.
-5. Within 1–2 minutes, GitHub Pages will automatically refresh and your live site will feature the new clear charts, commodities, one-line market rail, and interactive trading terminal!
+3. Drag and drop the updated files from your computer:
+   - [`c:\vrunda\trading\index.html`](./index.html)
+   - [`c:\vrunda\trading\README.md`](./README.md)
+4. Click the green **Commit changes** button.
+5. In 1–2 minutes, your live GitHub Pages link will automatically show the updated big screen chart with the closable left drawer and all 45+ Indian shares!
 
 ---
 
